@@ -1,6 +1,7 @@
 library(tidyverse)
 library(circlize)
 
+
 setwd("~/Desktop/Review")
 ref_data <- read.csv("rayyan_references_included_chords2.csv", header = TRUE)
 df<- read.csv("articles.csv", header = TRUE)
@@ -93,7 +94,9 @@ title("Both")
 
 #Make interactive
 library(chorddiag)
+library(htmlwidgets)
 #p <- chorddiag(out_spatial,grid.col = cols,annotationTrack = "grid",group=group, big.gap = 10)
 p <- chorddiag(out_spatial, groupColors = cols, groupnamePadding = 20)
 p
 
+saveWidget(p, "chord_test.html", selfcontained = TRUE, knitrOptions = list())
