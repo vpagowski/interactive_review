@@ -3,7 +3,7 @@ title: "test_markdown"
 author: "Veronica"
 date: "2024-03-08"
 output: github_document 
-#always_allow_html: true
+always_allow_html: true
 ---
 
 ```{r setup, include=FALSE}
@@ -101,11 +101,16 @@ out_spatial2 = rbind(out_spatial2[c(1:7),],ad,ad,ad,ad,ad,ad,out_spatial2[c(8:9)
 
 You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-p <- chorddiag(out_spatial2, groupColors = cols2, showGroupnames = FALSE,groupPadding = 2,showTooltips = FALSE,tickInterval=10,ticklabelFontsize=0)
-p
-setwd("/Users/veronicapagowski/Desktop/interactive_app/interactive_review")
-saveWidget(p, "chord_test.html", selfcontained = TRUE, knitrOptions = list())
+```{r }
+#p <- chorddiag(out_spatial2, groupColors = cols2, showGroupnames = FALSE,groupPadding = 2,showTooltips = #FALSE,tickInterval=10,ticklabelFontsize=0)
+#p
+#setwd("/Users/veronicapagowski/Desktop/interactive_app/interactive_review")
+#saveWidget(p, "chord_test.html", selfcontained = TRUE, knitrOptions = list())
+
+library(plotly)
+p <- ggplot(data = diamonds, aes(x = cut, fill = clarity)) +
+            geom_bar(position = "dodge")
+ggplotly(p)
 
 ```
 
