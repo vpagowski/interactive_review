@@ -11,7 +11,7 @@ output: html_document
 These figures were compiled from small disjunctions
 
 
-```{r echo = FALSE}
+```{r eval =TRUE, echo = FALSE, include = FALSE, message = FALSE, warning = FALSE }
 setwd("~/Desktop/Review")
 ref_data <- read.csv("rayyan_references_included_chords2.csv", header = TRUE)
 
@@ -62,6 +62,7 @@ out_spatial2 = cbind(out_spatial1[,c(1:7)],ad,ad,ad,ad,ad,ad,out_spatial1[,c(8:9
 out_spatial2 = rbind(out_spatial2[c(1:7),],ad,ad,ad,ad,ad,ad,out_spatial2[c(8:9),],ad,ad,ad,ad,ad,ad)
 
 p <- chorddiag(out_spatial2, groupColors = cols2, showGroupnames = FALSE,groupPadding = 2,showTooltips = FALSE,tickInterval=10,ticklabelFontsize=0)
+setwd("/Users/veronicapagowski/Desktop/interactive_app/interactive_review")
 saveWidget(p, "chord_test.html", selfcontained = TRUE, knitrOptions = list())
 
 ```
