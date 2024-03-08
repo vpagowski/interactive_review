@@ -2,8 +2,12 @@
 title: "test_markdown"
 author: "Veronica"
 date: "2024-03-08"
-output: github_document 
+#output: github_document 
 always_allow_html: true
+output: 
+  md_document:
+    variant: gfm
+    preserve_yaml: true
 ---
 
 ```{r setup, include=FALSE}
