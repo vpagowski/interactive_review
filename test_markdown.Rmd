@@ -102,15 +102,17 @@ out_spatial2 = rbind(out_spatial2[c(1:7),],ad,ad,ad,ad,ad,ad,out_spatial2[c(8:9)
 You can also embed plots, for example:
 
 ```{r }
-#p <- chorddiag(out_spatial2, groupColors = cols2, showGroupnames = FALSE,groupPadding = 2,showTooltips = #FALSE,tickInterval=10,ticklabelFontsize=0)
-#p
+p <- chorddiag(out_spatial2, groupColors = cols2, showGroupnames = FALSE,groupPadding = 2,showTooltips = FALSE,tickInterval=10,ticklabelFontsize=0)
+p
 #setwd("/Users/veronicapagowski/Desktop/interactive_app/interactive_review")
 #saveWidget(p, "chord_test.html", selfcontained = TRUE, knitrOptions = list())
 
-library(plotly)
-p <- ggplot(data = diamonds, aes(x = cut, fill = clarity)) +
-            geom_bar(position = "dodge")
-ggplotly(p)
+htmltools::tags$iframe(src="/Users/veronicapagowski/Desktop/interactive_app/interactive_review/chord_test.html",
+    width="100%", 
+    height="400",
+    scrolling="no", 
+    seamless="seamless", 
+    frameBorder="0")
 
 ```
 
