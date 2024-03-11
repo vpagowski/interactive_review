@@ -20,6 +20,7 @@ library(tidyverse)
 library(chorddiag)
 library(htmlwidgets)
 library(gdata)
+library(htmltools)
 df<- read.csv("articles.csv", header = TRUE)
 df<-df %>% 
   filter(str_detect(Category, pattern = "nogap",negate=TRUE))
@@ -81,7 +82,7 @@ out_spatial2 = cbind(out_spatial1[,c(1:7)],ad,ad,ad,ad,ad,ad,out_spatial1[,c(8:9
 out_spatial2 = rbind(out_spatial2[c(1:7),],ad,ad,ad,ad,ad,ad,out_spatial2[c(8:9),],ad,ad,ad,ad,ad,ad)
 
 p <- chorddiag(out_spatial2, groupColors = cols_s, showGroupnames = FALSE,groupPadding = 2,showTooltips = FALSE,tickInterval=10,ticklabelFontsize=0)
-p
+#p
 
 ##Genetic
 #add white columns that are blank to spatially separate diagram
@@ -91,11 +92,17 @@ out_gen2 = cbind(out_gen1[,c(1:8)],ad,ad,ad,ad,ad,ad,out_gen1[,c(9)],ad,ad,ad,ad
 out_gen2 = rbind(out_gen2[c(1:8),],ad,ad,ad,ad,ad,ad,out_gen2[c(9),],ad,ad,ad,ad,ad,ad)
 
 q <- chorddiag(out_gen2, groupColors = cols_g, showGroupnames = FALSE,groupPadding = 2,showTooltips = FALSE,tickInterval=10,ticklabelFontsize=0)
-q
+#q
 
 
+layout <- div(style = "display: flex; flex-direction: row;",p,q)
+
+# Embed the layout into an HTML page
+html_print(layout)
 setwd("/Users/veronicapagowski/Desktop/interactive_app/interactive_review")
-saveWidget(p, "chord_test.html", selfcontained = TRUE, knitrOptions = list())
-saveWidget(p, "chord_test2.html", selfcontained = TRUE, knitrOptions = list())
+save_html(layout, "chorddiag_plots.html")
+
+#saveWidget(p, "chord_test.html", selfcontained = TRUE, knitrOptions = list())
+#saveWidget(p, "chord_test2.html", selfcontained = TRUE, knitrOptions = list())
 
 ```
