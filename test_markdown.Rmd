@@ -1,5 +1,5 @@
 ---
-title: "Interactive Review"
+title: "test_markdown"
 author: "Veronica"
 date: "2024-03-08"
 #output: github_document 
@@ -99,7 +99,7 @@ out_spatial2 = rbind(out_spatial2[c(1:7),],ad,ad,ad,ad,ad,ad,out_spatial2[c(8:9)
 ```
 
 ## Including Plots
-<iframe src="/Users/veronicapagowski/Desktop/interactive_app/interactive_review/chord_test.html" allowfullscreen> <iframe>
+<iframe src="/Users/veronicapagowski/Desktop/interactive_app/interactive_review/chord_test.html"> <iframe>
 You can also embed plots, for example:
 
 ```{r }
