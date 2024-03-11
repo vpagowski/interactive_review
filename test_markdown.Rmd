@@ -98,9 +98,9 @@ q <- chorddiag(out_gen2, groupColors = cols_g, showGroupnames = FALSE,groupPaddi
 layout <- div(style = "display: flex; flex-direction: row;",p,q)
 
 # Embed the layout into an HTML page
-html_print(layout)
+layout
 setwd("/Users/veronicapagowski/Desktop/interactive_app/interactive_review")
-save_html(layout, "chorddiag_plots.html")
+#save_html(layout, "chorddiag_plots.html")
 
 #saveWidget(p, "chord_test.html", selfcontained = TRUE, knitrOptions = list())
 #saveWidget(p, "chord_test2.html", selfcontained = TRUE, knitrOptions = list())
