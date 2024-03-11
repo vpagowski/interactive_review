@@ -100,6 +100,9 @@ out_spatial2 = rbind(out_spatial2[c(1:7),],ad,ad,ad,ad,ad,ad,out_spatial2[c(8:9)
 
 ## Including Plots
 You can also embed plots, for example:
+<iframe src="/Users/veronicapagowski/Desktop/interactive_app/interactive_review/chord_test.html"><iframe>
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
 
 ```{r }
 p <- chorddiag(out_spatial2, groupColors = cols2, showGroupnames = FALSE,groupPadding = 2,showTooltips = FALSE,tickInterval=10,ticklabelFontsize=0)
