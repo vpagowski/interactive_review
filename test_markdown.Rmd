@@ -99,7 +99,6 @@ out_spatial2 = rbind(out_spatial2[c(1:7),],ad,ad,ad,ad,ad,ad,out_spatial2[c(8:9)
 ```
 
 ## Including Plots
-<iframe src="/Users/veronicapagowski/Desktop/interactive_app/interactive_review/chord_test.html"> <iframe>
 You can also embed plots, for example:
 
 ```{r }
@@ -111,10 +110,8 @@ saveWidget(p, "chord_test.html", selfcontained = TRUE, knitrOptions = list())
 #htmltools::tags$iframe(src="/Users/veronicapagowski/Desktop/interactive_app/interactive_review/chord_test.html",
 #    width="100%", 
 #    height="400",
- ##   scrolling="no", 
+#    scrolling="no", 
 #    seamless="seamless", 
 #    frameBorder="0")
 
 ```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
