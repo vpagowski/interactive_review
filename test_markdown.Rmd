@@ -17,7 +17,7 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r eval =TRUE}
+```{r eval =TRUE, echo=FALSE}
 setwd("~/Desktop/Review")
 #Make descision tree
 ref_data <- read.csv("rayyan_references_included_chords2.csv", header = TRUE)
@@ -65,8 +65,8 @@ group <- c(V = "A", O = "A", H = "A", I = "A", E = "A", L = "A",
 
 out_spatial1[upper.tri(out_spatial1)] <- NA
 
-p<-chordDiagram(out_spatial1,grid.col = cols,annotationTrack = "grid",group=group, big.gap = 10) 
-title("Spatial")
+#p<-chordDiagram(out_spatial1,grid.col = cols,annotationTrack = "grid",group=group, big.gap = 10) 
+#title("Spatial")
 
 #cols2 <- c("plum1","olivedrab2","violetred","borwn4","royalblue3","indianred3","#009E73","lightsalmon","#6EE2FF","chocolate1","gray25","darkblue","darkmagenta","green")
 
@@ -94,6 +94,10 @@ ad <- c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
 out_spatial2 = cbind(out_spatial1[,c(1:7)],ad,ad,ad,ad,ad,ad,out_spatial1[,c(8:9)],ad,ad,ad,ad,ad,ad)
 out_spatial2 = rbind(out_spatial2[c(1:7),],ad,ad,ad,ad,ad,ad,out_spatial2[c(8:9),],ad,ad,ad,ad,ad,ad)
 
+p <- chorddiag(out_spatial2, groupColors = cols2, showGroupnames = FALSE,groupPadding = 2,showTooltips = FALSE,tickInterval=10,ticklabelFontsize=0)
+p
+setwd("/Users/veronicapagowski/Desktop/interactive_app/interactive_review")
+saveWidget(p, "chord_test.html", selfcontained = TRUE, knitrOptions = list())
 
 
 ```
@@ -104,11 +108,7 @@ You can also embed plots, for example:
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
 
-```{r }
-p <- chorddiag(out_spatial2, groupColors = cols2, showGroupnames = FALSE,groupPadding = 2,showTooltips = FALSE,tickInterval=10,ticklabelFontsize=0)
-p
-setwd("/Users/veronicapagowski/Desktop/interactive_app/interactive_review")
-saveWidget(p, "chord_test.html", selfcontained = TRUE, knitrOptions = list())
+```{r , echo = FALSE}
 
 #htmltools::tags$iframe(src="/Users/veronicapagowski/Desktop/interactive_app/interactive_review/chord_test.html",
 #    width="100%", 
