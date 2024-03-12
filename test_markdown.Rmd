@@ -105,18 +105,36 @@ out_both2 = rbind(out_both2[c(1:10),],ad,ad,ad,ad,ad,ad,out_both2[c(11:12),],ad,
 
 p3 <- chorddiag(out_both2, groupColors = cols_b, showGroupnames = FALSE,groupPadding = 2,showTooltips = FALSE,tickInterval=10,ticklabelFontsize=0)
 
+custom_css <- "
+<style>
+.layout-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start; /* Align the graphs to the left */
+    gap: 20px; /* Adjust space between graphs */
+}
 
+.graph-container {
+    flex: 1;
+    margin: 0 5px; /* Adjust margin as needed */
+    width: 35%; /* Adjust width of each graph container */
+}
+</style>
+"
 
-layout <- div(style = "display: flex; flex-direction: row;",p1,p2,p3)
+# Create div layout with custom CSS
+layout <- tags$div(
+    class = "layout-container",
+    tags$div(class = "graph-container", p1),
+    tags$div(class = "graph-container", p2),
+    tags$div(class = "graph-container", p3),
+    HTML(custom_css)
+)
 
-# Embed the layout into an HTML page
+# Display layout
 layout
+
 setwd("/Users/veronicapagowski/Desktop/interactive_app/interactive_review")
-#save_html(layout, "chorddiag_plots.html")
-
-#saveWidget(p, "chord_test.html", selfcontained = TRUE, knitrOptions = list())
-#saveWidget(p, "chord_test2.html", selfcontained = TRUE, knitrOptions = list())
-
 ```
 
 ```{r eval =TRUE, echo=FALSE, message = FALSE, warning = FALSE }
@@ -197,17 +215,44 @@ out_bothb2 = cbind(out_bothb1[,c(1:11)],ad,ad,ad,ad,ad,ad,out_bothb1[,c(12:13)],
 out_bothb2 = rbind(out_bothb2[c(1:11),],ad,ad,ad,ad,ad,ad,out_bothb2[c(12:13),],ad,ad,ad,ad,ad,ad)
 
 p3 <- chorddiag(out_bothb2, groupColors = cols_b, showGroupnames = FALSE,groupPadding = 2,showTooltips = FALSE,tickInterval=10,ticklabelFontsize=0)
+custom_css <- "
+<style>
+.layout-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start; /* Align the graphs to the left */
+    gap: 20px; /* Adjust space between graphs */
+}
 
+.graph-container {
+    flex: 1;
+    margin: 0 5px; /* Adjust margin as needed */
+    width: 35%; /* Adjust width of each graph container */
+}
+</style>
+"
 
+# Create div layout with custom CSS
+layout2 <- tags$div(
+    class = "layout-container",
+    tags$div(class = "graph-container", p1),
+    tags$div(class = "graph-container", p2),
+    tags$div(class = "graph-container", p3),
+    HTML(custom_css)
+)
 
-layout2 <- div(style = "display: flex; flex-direction: row;",p1,p2,p3)
-
-# Embed the layout into an HTML page
+# Display layout
 layout2
-#setwd("/Users/veronicapagowski/Desktop/interactive_app/interactive_review")
-#save_html(layout, "chorddiag_plots.html")
 
-#saveWidget(p, "chord_test.html", selfcontained = TRUE, knitrOptions = list())
+
+#layout2 <- div(style = "display: flex; flex-direction: row;",p1,p2,p3)
+
 #saveWidget(p, "chord_test2.html", selfcontained = TRUE, knitrOptions = list())
 
+```
+
+
+```{r eval =TRUE, echo=FALSE, message = FALSE, warning = FALSE }
+#layout2
+#layout
 ```
