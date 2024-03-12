@@ -9,9 +9,50 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Spatial Disjunctions
+## Big Disjunctions
+<style>
+.layout-container {
+    display: space-between; /* Use flexbox for layout */
+    align-items: flex-start; /* Align items to the start (left) of the flex container */
+    margin-left: -300px;
+}
 
-```{r eval =TRUE, echo=FALSE, message = FALSE, warning = FALSE }
+.graph-container {
+    display: space-between; /* Display graphs as inline-block to ensure they are in a row */
+    width: 33%; /* Each graph container takes one-third of the width */
+    margin-right: 20px; /* Adjust margin as needed */
+    margin-left: 0px;
+    top: 0; 
+    bottom: 0;
+    padding: 0; 
+}
+.graph-container h2 {
+    position: absolute;
+    align-items: flex-start; 
+    margin-left: 440px; /* Reset margin for titles */
+    width: 100%;
+    top: 220px; 
+    bottom: 0;
+    padding: 0; 
+    font-style: italic; /* Make the font italicized */
+    font-size: 25px; /* Set smaller font size */
+}
+
+.graph-container h3 {
+    position: absolute;
+    align-items: flex-start; 
+    margin-left: 440px; /* Reset margin for titles */
+    width: 100%;
+    top: 800px; 
+    bottom: 0;
+    padding: 0; 
+    font-style: italic; /* Make the font italicized */
+    font-size: 25px; /* Set smaller font size */
+}
+</style>
+
+
+```{r eval =TRUE, echo=FALSE, message = FALSE, warning = FALSE,fig.align = 'left' }
 setwd("~/Desktop/Review")
 ref_data <- read.csv("rayyan_references_included_chords2.csv", header = TRUE)
 
@@ -24,6 +65,136 @@ library(htmltools)
 df<- read.csv("articles.csv", header = TRUE)
 df<-df %>% 
   filter(str_detect(Category, pattern = "nogap",negate=TRUE))
+
+############## BIG SPATIAL SCALES ONLY ##############
+dfb<-df %>% 
+  filter(str_detect(Category, pattern = "K"))
+#Spatial = S, Community = C, Genetic = G
+# Small-scale = J, Big = K
+
+#Get spatial gap matrix
+spatialb1<-dfb %>% 
+  filter(str_detect(Category, pattern = "S") & !str_detect(Category, pattern = "G"))
+out_spatialb1 <- crossprod(table(subset(stack(setNames(lapply(strsplit(spatialb1$Category, "[][]|,\\s*"), trimws), spatialb1$Id))[2:1], nzchar(values))))
+diag(out_spatialb1) <- 0
+out_spatialb1 <- out_spatialb1[, !colnames(out_spatialb1) %in% c("U","M")] 
+out_spatialb1 <- out_spatialb1[!rownames(out_spatialb1) %in% c("U","M"),]
+
+#Arrange 
+custom_order<-c("V","O","H","I","E","B","T","C","S")
+out_spatialb1 <- out_spatialb1[custom_order, custom_order]
+out_spatialb1[upper.tri(out_spatialb1)] <- NA
+upperTriangle(out_spatialb1) = lowerTriangle(out_spatialb1, byrow=TRUE)
+
+#get genetic gap matrix
+geneticb1<-dfb %>% 
+  filter(str_detect(Category, pattern = "G") & !str_detect(Category, pattern = "S"))
+out_genb1 <- crossprod(table(subset(stack(setNames(lapply(strsplit(geneticb1$Category,  "[][]|,\\s*"), trimws), geneticb1$Id))[2:1], nzchar(values))))
+diag(out_genb1) <- 0
+out_genb1 <- out_genb1[, !colnames(out_genb1) %in% c("U","M")] 
+out_genb1 <- out_genb1[!rownames(out_genb1) %in% c("U","M"),]
+#Arrange 
+custom_order<-c("V","O","G")
+out_genb1 <- out_genb1[custom_order, custom_order]
+out_genb1[upper.tri(out_genb1)] <- NA
+upperTriangle(out_genb1) = lowerTriangle(out_genb1, byrow=TRUE)
+
+
+#get both gap matrix
+bothb1 <- dfb %>%
+  filter(str_detect(Category, pattern = "G") & str_detect(Category, pattern = "S"))
+out_bothb1 <- crossprod(table(subset(stack(setNames(lapply(strsplit(bothb1$Category, "[][]|,\\s*"), trimws), bothb1$Id))[2:1], nzchar(values))))
+diag(out_bothb1) <- 0
+out_bothb1 <- out_bothb1[, !colnames(out_bothb1) %in% c("U","M")] 
+out_bothb1 <- out_bothb1[!rownames(out_bothb1) %in% c("U","M"),]
+#Arrange 
+custom_order<-c("V","O","H","I", "E","L","B","T","Sx","F","W","G","S")
+out_bothb1 <- out_bothb1[custom_order, custom_order]
+
+#Make interactive plots
+
+
+##Spatial
+#add white columns that are blank to spatially separate diagram
+cols_s <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323", "#F0E442","#CD5555", "#009E73","white","white","white","white","white","white","#8B008B","#404040","white","white","white","white","white","white")
+
+ad <- rep(0,7)
+out_spatialb2 = cbind(out_spatialb1[,c(1:7)],ad,ad,ad,ad,ad,ad,out_spatialb1[,c(8:9)],ad,ad,ad,ad,ad,ad)
+out_spatialb2 = rbind(out_spatialb2[c(1:7),],ad,ad,ad,ad,ad,ad,out_spatialb2[c(8:9),],ad,ad,ad,ad,ad,ad)
+
+p1 <- chorddiag(out_spatialb2, groupColors = cols_s, showGroupnames = FALSE,groupPadding = 2,showTooltips = FALSE,tickInterval=10,ticklabelFontsize=0)
+
+##Genetic
+#add white columns that are blank to spatially separate diagram
+cols_gb <- c("#FFBBFF","#B3EE3A", "white","white","white","white","white","white","#00008B","white","white","white","white","white","white")
+ad <- rep(0,2)
+out_genb2 = cbind(out_genb1[,c(1:2)],ad,ad,ad,ad,ad,ad,out_genb1[,c(3)],ad,ad,ad,ad,ad,ad)
+out_genb2 = rbind(out_genb2[c(1:2),],ad,ad,ad,ad,ad,ad,out_genb2[c(3),],ad,ad,ad,ad,ad,ad)
+
+p2 <- chorddiag(out_genb2, groupColors = cols_gb, showGroupnames = FALSE,groupPadding = 2,showTooltips = FALSE,tickInterval=10,ticklabelFontsize=0)
+#q
+
+#Both
+cols_b <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323","#F0E442", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF","#FF7F24", "white","white","white","white","white","white","#00008B","#404040","white","white","white","white","white","white")
+
+ad <- rep(0,13)
+out_bothb2 = cbind(out_bothb1[,c(1:11)],ad,ad,ad,ad,ad,ad,out_bothb1[,c(12:13)],ad,ad,ad,ad,ad,ad)
+out_bothb2 = rbind(out_bothb2[c(1:11),],ad,ad,ad,ad,ad,ad,out_bothb2[c(12:13),],ad,ad,ad,ad,ad,ad)
+
+p3 <- chorddiag(out_bothb2, groupColors = cols_b, showGroupnames = FALSE,groupPadding = 2,showTooltips = FALSE,tickInterval=10,ticklabelFontsize=0)
+
+
+custom_css <- "
+<style>
+.layout-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; /* Adjust alignment as needed */
+}
+
+.graph-container {
+    flex: 1;
+    margin: 0px; /* Adjust margin as needed */
+    width: 30%; /* Adjust width of each graph container */
+}
+</style>
+"
+
+# Define titles for each graph
+title_p1 <- "Spatial"
+title_p2 <- "Genetic"
+title_p3 <- "Both"
+
+# Create div layout with custom CSS and titles
+layout <- tags$div(
+  class = "layout-container",
+  tags$div(
+    class = "graph-container",
+    tags$h2(title_p1),  # Add title for graph p1
+    p1
+  ),
+  tags$div(
+    class = "graph-container",
+    tags$h2(title_p2),  # Add title for graph p2
+    p2
+  ),
+  tags$div(
+    class = "graph-container",
+    tags$h2(title_p3),  # Add title for graph p3
+    p3
+  ),
+  HTML(custom_css)
+)
+layout
+setwd("/Users/veronicapagowski/Desktop/interactive_app/interactive_review")
+#saveWidget(p, "chord_test2.html", selfcontained = TRUE, knitrOptions = list())
+
+
+```
+
+
+## Small Disjunctions
+```{r eval =TRUE, echo=FALSE, message = FALSE, warning = FALSE }
 
 ############## SMALL SPATIAL SCALES ONLY ##############
 dfs<-df %>% 
@@ -110,149 +281,44 @@ custom_css <- "
 .layout-container {
     display: flex;
     flex-direction: row;
-    justify-content: flex-start; /* Align the graphs to the left */
-    gap: 20px; /* Adjust space between graphs */
+    justify-content: space-between; /* Adjust alignment as needed */
 }
 
 .graph-container {
     flex: 1;
-    margin: 0 5px; /* Adjust margin as needed */
-    width: 35%; /* Adjust width of each graph container */
+    margin: 0px; /* Adjust margin as needed */
+    width: 30%; /* Adjust width of each graph container */
 }
 </style>
 "
 
-# Create div layout with custom CSS
-layout <- tags$div(
-    class = "layout-container",
-    tags$div(class = "graph-container", p1),
-    tags$div(class = "graph-container", p2),
-    tags$div(class = "graph-container", p3),
-    HTML(custom_css)
-)
+# Define titles for each graph
+title_p1 <- "Spatial"
+title_p2 <- "Genetic"
+title_p3 <- "Both"
 
-# Display layout
-layout
-
-setwd("/Users/veronicapagowski/Desktop/interactive_app/interactive_review")
-```
-
-```{r eval =TRUE, echo=FALSE, message = FALSE, warning = FALSE }
-
-############## BIG SPATIAL SCALES ONLY ##############
-dfb<-df %>% 
-  filter(str_detect(Category, pattern = "K"))
-#Spatial = S, Community = C, Genetic = G
-# Small-scale = J, Big = K
-
-#Get spatial gap matrix
-spatialb1<-dfb %>% 
-  filter(str_detect(Category, pattern = "S") & !str_detect(Category, pattern = "G"))
-out_spatialb1 <- crossprod(table(subset(stack(setNames(lapply(strsplit(spatialb1$Category, "[][]|,\\s*"), trimws), spatialb1$Id))[2:1], nzchar(values))))
-diag(out_spatialb1) <- 0
-out_spatialb1 <- out_spatialb1[, !colnames(out_spatialb1) %in% c("U","M")] 
-out_spatialb1 <- out_spatialb1[!rownames(out_spatialb1) %in% c("U","M"),]
-
-#Arrange 
-custom_order<-c("V","O","H","I","E","B","T","C","S")
-out_spatialb1 <- out_spatialb1[custom_order, custom_order]
-out_spatialb1[upper.tri(out_spatialb1)] <- NA
-upperTriangle(out_spatialb1) = lowerTriangle(out_spatialb1, byrow=TRUE)
-
-#get genetic gap matrix
-geneticb1<-dfb %>% 
-  filter(str_detect(Category, pattern = "G") & !str_detect(Category, pattern = "S"))
-out_genb1 <- crossprod(table(subset(stack(setNames(lapply(strsplit(geneticb1$Category,  "[][]|,\\s*"), trimws), geneticb1$Id))[2:1], nzchar(values))))
-diag(out_genb1) <- 0
-out_genb1 <- out_genb1[, !colnames(out_genb1) %in% c("U","M")] 
-out_genb1 <- out_genb1[!rownames(out_genb1) %in% c("U","M"),]
-#Arrange 
-custom_order<-c("V","O","G")
-out_genb1 <- out_genb1[custom_order, custom_order]
-out_genb1[upper.tri(out_genb1)] <- NA
-upperTriangle(out_genb1) = lowerTriangle(out_genb1, byrow=TRUE)
-
-
-#get both gap matrix
-bothb1 <- dfb %>%
-  filter(str_detect(Category, pattern = "G") & str_detect(Category, pattern = "S"))
-out_bothb1 <- crossprod(table(subset(stack(setNames(lapply(strsplit(bothb1$Category, "[][]|,\\s*"), trimws), bothb1$Id))[2:1], nzchar(values))))
-diag(out_bothb1) <- 0
-out_bothb1 <- out_bothb1[, !colnames(out_bothb1) %in% c("U","M")] 
-out_bothb1 <- out_bothb1[!rownames(out_bothb1) %in% c("U","M"),]
-#Arrange 
-custom_order<-c("V","O","H","I", "E","L","B","T","Sx","F","W","G","S")
-out_bothb1 <- out_bothb1[custom_order, custom_order]
-
-#Make interactive plots
-
-
-##Spatial
-#add white columns that are blank to spatially separate diagram
-cols_s <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323", "#F0E442","#CD5555", "#009E73","white","white","white","white","white","white","#8B008B","#404040","white","white","white","white","white","white")
-
-ad <- rep(0,7)
-out_spatialb2 = cbind(out_spatialb1[,c(1:7)],ad,ad,ad,ad,ad,ad,out_spatialb1[,c(8:9)],ad,ad,ad,ad,ad,ad)
-out_spatialb2 = rbind(out_spatialb2[c(1:7),],ad,ad,ad,ad,ad,ad,out_spatialb2[c(8:9),],ad,ad,ad,ad,ad,ad)
-
-p1 <- chorddiag(out_spatialb2, groupColors = cols_s, showGroupnames = FALSE,groupPadding = 2,showTooltips = FALSE,tickInterval=10,ticklabelFontsize=0)
-
-##Genetic
-#add white columns that are blank to spatially separate diagram
-cols_gb <- c("#FFBBFF","#B3EE3A", "white","white","white","white","white","white","#00008B","white","white","white","white","white","white")
-ad <- rep(0,2)
-out_genb2 = cbind(out_genb1[,c(1:2)],ad,ad,ad,ad,ad,ad,out_genb1[,c(3)],ad,ad,ad,ad,ad,ad)
-out_genb2 = rbind(out_genb2[c(1:2),],ad,ad,ad,ad,ad,ad,out_genb2[c(3),],ad,ad,ad,ad,ad,ad)
-
-p2 <- chorddiag(out_genb2, groupColors = cols_gb, showGroupnames = FALSE,groupPadding = 2,showTooltips = FALSE,tickInterval=10,ticklabelFontsize=0)
-#q
-
-#Both
-cols_b <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323","#F0E442", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF","#FF7F24", "white","white","white","white","white","white","#00008B","#404040","white","white","white","white","white","white")
-
-ad <- rep(0,13)
-out_bothb2 = cbind(out_bothb1[,c(1:11)],ad,ad,ad,ad,ad,ad,out_bothb1[,c(12:13)],ad,ad,ad,ad,ad,ad)
-out_bothb2 = rbind(out_bothb2[c(1:11),],ad,ad,ad,ad,ad,ad,out_bothb2[c(12:13),],ad,ad,ad,ad,ad,ad)
-
-p3 <- chorddiag(out_bothb2, groupColors = cols_b, showGroupnames = FALSE,groupPadding = 2,showTooltips = FALSE,tickInterval=10,ticklabelFontsize=0)
-custom_css <- "
-<style>
-.layout-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start; /* Align the graphs to the left */
-    gap: 20px; /* Adjust space between graphs */
-}
-
-.graph-container {
-    flex: 1;
-    margin: 0 5px; /* Adjust margin as needed */
-    width: 35%; /* Adjust width of each graph container */
-}
-</style>
-"
-
-# Create div layout with custom CSS
+# Create div layout with custom CSS and titles
 layout2 <- tags$div(
-    class = "layout-container",
-    tags$div(class = "graph-container", p1),
-    tags$div(class = "graph-container", p2),
-    tags$div(class = "graph-container", p3),
-    HTML(custom_css)
+  class = "layout-container",
+  tags$div(
+    class = "graph-container",
+    tags$h3(title_p1),  # Add title for graph p1
+    p1
+  ),
+  tags$div(
+    class = "graph-container",
+    tags$h3(title_p2),  # Add title for graph p2
+    p2
+  ),
+  tags$div(
+    class = "graph-container",
+    tags$h3(title_p3),  # Add title for graph p3
+    p3
+  ),
+  HTML(custom_css)
 )
-
-# Display layout
 layout2
-
-
-#layout2 <- div(style = "display: flex; flex-direction: row;",p1,p2,p3)
-
-#saveWidget(p, "chord_test2.html", selfcontained = TRUE, knitrOptions = list())
+setwd("/Users/veronicapagowski/Desktop/interactive_app/interactive_review")
 
 ```
 
-
-```{r eval =TRUE, echo=FALSE, message = FALSE, warning = FALSE }
-#layout2
-#layout
-```
