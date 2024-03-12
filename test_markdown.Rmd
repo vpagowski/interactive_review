@@ -12,42 +12,30 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Big Disjunctions
 <style>
 .layout-container {
-    display: space-between; /* Use flexbox for layout */
-    align-items: flex-start; /* Align items to the start (left) of the flex container */
-    margin-left: -300px;
+    display: flex;
+    flex-direction: row;
+    margin-left: 0px;
 }
 
+
 .graph-container {
-    display: space-between; /* Display graphs as inline-block to ensure they are in a row */
-    width: 33%; /* Each graph container takes one-third of the width */
-    margin-right: 20px; /* Adjust margin as needed */
-    margin-left: 0px;
-    top: 0; 
-    bottom: 0;
-    padding: 0; 
-}
-.graph-container h2 {
-    position: absolute;
-    align-items: flex-start; 
-    margin-left: 440px; /* Reset margin for titles */
+    margin: 0px 30px; /* Adjust margin as needed */
     width: 100%;
+    padding:0;
+}
+
+.graph-container h2 {
+    width: 90%;
     top: 220px; 
-    bottom: 0;
-    padding: 0; 
     font-style: italic; /* Make the font italicized */
-    font-size: 25px; /* Set smaller font size */
+    font-size: 20px; /* Set smaller font size */
 }
 
 .graph-container h3 {
-    position: absolute;
-    align-items: flex-start; 
-    margin-left: 440px; /* Reset margin for titles */
-    width: 100%;
-    top: 800px; 
-    bottom: 0;
-    padding: 0; 
+    width: 90%;
+    top: 690px; 
     font-style: italic; /* Make the font italicized */
-    font-size: 25px; /* Set smaller font size */
+    font-size: 20px; /* Set smaller font size */
 }
 </style>
 
@@ -122,7 +110,7 @@ ad <- rep(0,7)
 out_spatialb2 = cbind(out_spatialb1[,c(1:7)],ad,ad,ad,ad,ad,ad,out_spatialb1[,c(8:9)],ad,ad,ad,ad,ad,ad)
 out_spatialb2 = rbind(out_spatialb2[c(1:7),],ad,ad,ad,ad,ad,ad,out_spatialb2[c(8:9),],ad,ad,ad,ad,ad,ad)
 
-p1 <- chorddiag(out_spatialb2, groupColors = cols_s, showGroupnames = FALSE,groupPadding = 2,showTooltips = FALSE,tickInterval=10,ticklabelFontsize=0)
+p1 <- chorddiag(out_spatialb2, groupColors = cols_s, showGroupnames = FALSE,groupPadding = 2,showTooltips = TRUE,showZeroTooltips = FALSE,tickInterval=10,ticklabelFontsize=0,precision=3,groupnamePadding = 0,width = 350, height=350, margin=10)
 
 ##Genetic
 #add white columns that are blank to spatially separate diagram
@@ -131,7 +119,7 @@ ad <- rep(0,2)
 out_genb2 = cbind(out_genb1[,c(1:2)],ad,ad,ad,ad,ad,ad,out_genb1[,c(3)],ad,ad,ad,ad,ad,ad)
 out_genb2 = rbind(out_genb2[c(1:2),],ad,ad,ad,ad,ad,ad,out_genb2[c(3),],ad,ad,ad,ad,ad,ad)
 
-p2 <- chorddiag(out_genb2, groupColors = cols_gb, showGroupnames = FALSE,groupPadding = 2,showTooltips = FALSE,tickInterval=10,ticklabelFontsize=0)
+p2 <- chorddiag(out_genb2, groupColors = cols_gb, showGroupnames = FALSE,groupPadding = 2,showTooltips = TRUE,showZeroTooltips = FALSE,tickInterval=10,ticklabelFontsize=0,precision=3,groupnamePadding = 0,width = 350, height=350, margin=10)
 #q
 
 #Both
@@ -141,24 +129,8 @@ ad <- rep(0,13)
 out_bothb2 = cbind(out_bothb1[,c(1:11)],ad,ad,ad,ad,ad,ad,out_bothb1[,c(12:13)],ad,ad,ad,ad,ad,ad)
 out_bothb2 = rbind(out_bothb2[c(1:11),],ad,ad,ad,ad,ad,ad,out_bothb2[c(12:13),],ad,ad,ad,ad,ad,ad)
 
-p3 <- chorddiag(out_bothb2, groupColors = cols_b, showGroupnames = FALSE,groupPadding = 2,showTooltips = FALSE,tickInterval=10,ticklabelFontsize=0)
+p3 <- chorddiag(out_bothb2, groupColors = cols_b, showGroupnames = FALSE,groupPadding = 2,showTooltips = TRUE,showZeroTooltips = FALSE,tickInterval=10,ticklabelFontsize=0, precision=3,groupnamePadding = 0,width = 350, height=350, margin=10)
 
-
-custom_css <- "
-<style>
-.layout-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between; /* Adjust alignment as needed */
-}
-
-.graph-container {
-    flex: 1;
-    margin: 0px; /* Adjust margin as needed */
-    width: 30%; /* Adjust width of each graph container */
-}
-</style>
-"
 
 # Define titles for each graph
 title_p1 <- "Spatial"
@@ -182,13 +154,11 @@ layout <- tags$div(
     class = "graph-container",
     tags$h2(title_p3),  # Add title for graph p3
     p3
-  ),
-  HTML(custom_css)
+  )
 )
 layout
-setwd("/Users/veronicapagowski/Desktop/interactive_app/interactive_review")
+#setwd("/Users/veronicapagowski/Desktop/interactive_app/interactive_review")
 #saveWidget(p, "chord_test2.html", selfcontained = TRUE, knitrOptions = list())
-
 
 ```
 
@@ -254,7 +224,7 @@ ad <- rep(0,7)
 out_spatial2 = cbind(out_spatial1[,c(1:7)],ad,ad,ad,ad,ad,ad,out_spatial1[,c(8:9)],ad,ad,ad,ad,ad,ad)
 out_spatial2 = rbind(out_spatial2[c(1:7),],ad,ad,ad,ad,ad,ad,out_spatial2[c(8:9),],ad,ad,ad,ad,ad,ad)
 
-p1 <- chorddiag(out_spatial2, groupColors = cols_s, showGroupnames = FALSE,groupPadding = 2,showTooltips = FALSE,tickInterval=10,ticklabelFontsize=0)
+p1s <- chorddiag(out_spatial2, groupColors = cols_s, showGroupnames = FALSE,groupPadding = 2,showTooltips = TRUE,showZeroTooltips = FALSE,precision=3,tickInterval=10,ticklabelFontsize=0,groupnamePadding = 0,width = 350, height=350, margin=10)
 #p
 
 ##Genetic
@@ -264,7 +234,7 @@ ad <- rep(0,8)
 out_gen2 = cbind(out_gen1[,c(1:8)],ad,ad,ad,ad,ad,ad,out_gen1[,c(9)],ad,ad,ad,ad,ad,ad)
 out_gen2 = rbind(out_gen2[c(1:8),],ad,ad,ad,ad,ad,ad,out_gen2[c(9),],ad,ad,ad,ad,ad,ad)
 
-p2 <- chorddiag(out_gen2, groupColors = cols_g, showGroupnames = FALSE,groupPadding = 2,showTooltips = FALSE,tickInterval=10,ticklabelFontsize=0)
+p2s <- chorddiag(out_gen2, groupColors = cols_g, showGroupnames = FALSE,groupPadding = 2,showTooltips = TRUE,precision=3,showZeroTooltips = FALSE,tickInterval=10,ticklabelFontsize=0,groupnamePadding = 0,width = 350, height=350, margin=10)
 #q
 
 #Both
@@ -274,23 +244,8 @@ ad <- rep(0,12)
 out_both2 = cbind(out_both1[,c(1:10)],ad,ad,ad,ad,ad,ad,out_both1[,c(11:12)],ad,ad,ad,ad,ad,ad)
 out_both2 = rbind(out_both2[c(1:10),],ad,ad,ad,ad,ad,ad,out_both2[c(11:12),],ad,ad,ad,ad,ad,ad)
 
-p3 <- chorddiag(out_both2, groupColors = cols_b, showGroupnames = FALSE,groupPadding = 2,showTooltips = FALSE,tickInterval=10,ticklabelFontsize=0)
+p3s <- chorddiag(out_both2, groupColors = cols_b, showGroupnames = FALSE, groupPadding = 2,showTooltips = TRUE,precision=3, showZeroTooltips = FALSE,tickInterval=10,ticklabelFontsize=0,groupnamePadding = 0,width = 350, height=350, margin=10)
 
-custom_css <- "
-<style>
-.layout-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between; /* Adjust alignment as needed */
-}
-
-.graph-container {
-    flex: 1;
-    margin: 0px; /* Adjust margin as needed */
-    width: 30%; /* Adjust width of each graph container */
-}
-</style>
-"
 
 # Define titles for each graph
 title_p1 <- "Spatial"
@@ -303,22 +258,21 @@ layout2 <- tags$div(
   tags$div(
     class = "graph-container",
     tags$h3(title_p1),  # Add title for graph p1
-    p1
+    p1s
   ),
   tags$div(
     class = "graph-container",
     tags$h3(title_p2),  # Add title for graph p2
-    p2
+    p2s
   ),
   tags$div(
     class = "graph-container",
     tags$h3(title_p3),  # Add title for graph p3
-    p3
-  ),
-  HTML(custom_css)
+    p3s
+  )
 )
 layout2
-setwd("/Users/veronicapagowski/Desktop/interactive_app/interactive_review")
+#setwd("/Users/veronicapagowski/Desktop/interactive_app/interactive_review")
 
 ```
 
