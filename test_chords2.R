@@ -1,5 +1,4 @@
 setwd("~/Desktop/Review")
-#Make descision tree
 ref_data <- read.csv("rayyan_references_included_chords2.csv", header = TRUE)
 
 ###Associations plots
@@ -20,7 +19,7 @@ spatial1<-dfs %>%
 out_spatial1 <- crossprod(table(subset(stack(setNames(lapply(strsplit(spatial1$Category, 
                                                                       "[][]|,\\s*"), trimws), spatial1$Id))[2:1], nzchar(values))))
 diag(out_spatial1) <- 0
-#remove U and M category (misc. and unknown
+#remove U and M category (misc. and unknown)
 out_spatial1 <- out_spatial1[, !colnames(out_spatial1) %in% c("U","M")] 
 out_spatial1 <- out_spatial1[!rownames(out_spatial1) %in% c("U","M"),]
 

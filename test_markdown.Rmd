@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 .graph-container {
-    margin: 0px 30px; /* Adjust margin as needed */
+    margin: -100px 30px; /* Adjust margin as needed */
     width: 100%;
     padding:0;
 }
