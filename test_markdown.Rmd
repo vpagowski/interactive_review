@@ -12,38 +12,37 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Big Disjunctions
 <style>
-body {
+  body {
     position: absolute;
     left: 50px;
-    }
+  }
 .layout-container {
-    display: flex;
-    flex-direction: row;
-    margin-left: 50px;
+  display: flex;
+  flex-direction: row;
+  margin-left: 50px;
 }
 
 
 .graph-container {
-    margin: 0px 30px; /* Adjust margin as needed */
+  margin: 0px 30px; /* Adjust margin as needed */
     width: 100%;
-    padding:0;
+  padding:0;
 }
 
 .graph-container h2 {
-    width: 90%;
-    top: 220px; 
-    font-style: italic; /* Make the font italicized */
+  width: 90%;
+  top: 220px; 
+  font-style: italic; /* Make the font italicized */
     font-size: 20px; /* Set smaller font size */
 }
 
 .graph-container h3 {
-    width: 90%;
-    top: 690px; 
-    font-style: italic; /* Make the font italicized */
+  width: 90%;
+  top: 690px; 
+  font-style: italic; /* Make the font italicized */
     font-size: 20px; /* Set smaller font size */
 }
 </style>
-
 
 ```{r eval =TRUE, echo=FALSE, message = FALSE, warning = FALSE,fig.align = 'left' }
 ###Associations plots
@@ -290,34 +289,91 @@ layout2 <- tags$div(
   )
 )
 layout2
-#setwd("/Users/veronicapagowski/Desktop/interactive_app/interactive_review")
 
 ```
 
 
 ```{r eval =TRUE, echo=FALSE, message = FALSE, warning = FALSE}
 #Just look at fish Papers: Small spatial scales
-
 library(shiny)
-library(viridis)
-selectInput("colors", "Choose a color palette", 
-  choices = c("viridis", "magma", "inferno", "plasma", "heat",
-  "terrain", "topographic", "cyan/magenta", "rainbow"))
+library(ggplot2)
+library(DT)
 
-colorPalette <- reactive({
-  switch(input$colors, 
-         "viridis" = viridis(200),
-         "magma" = viridis(200, option = "A"),
-         "inferno" = viridis(200, option = "B"),
-         "plasma" = viridis(200, option = "C"),
-         "heat" = heat.colors(200),
-         "terrain" = terrain.colors(200),
-         "topographic" = topo.colors(200),
-         "cyan/magenta" = cm.colors(200),
-         "rainbow" = rainbow(200))
+###############
+##Small spatial
+##################
+taxa<- c("Be", "Fi", "Al", "In", "Ma", "Mo","Mu","Ot","Plankton","Pplankton")
+all_col <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323","#F0E442", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF","#B03060",
+           "#EE3B3B", "#FF7F24","#006400", "#8B8B00","#D2B48C", "#8B008B","#00008B","#404040")
+
+order_gp <- cbind(custom_order1,all_col)
+ui <- fluidPage(
+  
+  # Application title
+  titlePanel("Filtered plots"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      uiOutput("selected_taxa"),
+      div(actionButton("add_plot", "See the plot"), 
+          actionButton("clear", "Clear All")
+          )
+    ),
+    
+    mainPanel(chorddiag::chorddiagOutput("chordDiagram"),
+    )
+  )
+)
+
+
+server <- function(input, output, session) {
+  ## This function gives us the list of genes.
+  taxa_list <- reactive({
+    unique(taxa)
+  })
+  
+  # This function give us a select list input, in order to be able to select the gene that we want to see
+  output$selected_taxa <- renderUI({
+    selectizeInput(inputId = "taxa", "Select a taxon", choices=taxa_list(), options=list(maxOptions = length(taxa_list())))
+  })
+  
+  mydata <- reactive({
+    req(input$taxa)
+      df <- spatial1 %>% 
+        filter(str_detect(Category, pattern = input$taxa))
+      out_df <- crossprod(table(subset(stack(setNames(lapply(strsplit(df$Category, 
+                                                                 "[][]|,\\s*"), trimws), df$Id))[2:1], nzchar(values))))
+      diag(out_df) <- 0
+      custom_order_f <- intersect(custom_order1,colnames(out_df))
+      out_df <- out_df[custom_order_f, custom_order_f]
+      out_df
+  })
+
+  use_cols <- reactive({
+  req(input$taxa)
+  df <- spatial1 %>% 
+    filter(str_detect(Category, pattern = input$taxa))
+  out_df <- crossprod(table(subset(stack(setNames(lapply(strsplit(df$Category, 
+                                                           "[][]|,\\s*"), trimws), df$Id))[2:1], nzchar(values))))
+  diag(out_df) <- 0
+  custom_order_f <- intersect(custom_order1, colnames(out_df))
+  out_df <- out_df[custom_order_f, custom_order_f]
+  cols <- subset((order_gp[,2]), custom_order1 %in% colnames(out_df))
+  cols
 })
 
-renderPlot({
-  image(volcano, col = colorPalette())
-})
+  
+
+  v <- reactiveValues(plot = NULL, table=NULL)
+  
+  observeEvent(input$add_plot, {
+     output$chordDiagram <- renderChorddiag({ chorddiag::chorddiag(mydata(), groupColors = use_cols(), showGroupnames = FALSE, groupPadding = 2,showTooltips = TRUE,precision=3, showZeroTooltips = FALSE,tickInterval=10,ticklabelFontsize=0,groupnamePadding = 0,width = 350, height=350, margin=10)
+     })
+  })
+
+  
+}
+
+shinyApp(ui, server)
 ```
+
