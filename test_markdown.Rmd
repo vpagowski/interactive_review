@@ -13,12 +13,12 @@ knitr::opts_chunk$set(echo = TRUE)
 <style>
 body {
     position: absolute;
-    left: 0px;
+    left: 50px;
     }
 .layout-container {
     display: flex;
     flex-direction: row;
-    margin-left: 0px;
+    margin-left: 50px;
 }
 
 
