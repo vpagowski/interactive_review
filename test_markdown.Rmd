@@ -11,6 +11,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Big Disjunctions
 <style>
+body {
+    position: absolute;
+    left: 0px;
+    }
 .layout-container {
     display: flex;
     flex-direction: row;
@@ -19,7 +23,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 .graph-container {
-    margin: -100px 30px; /* Adjust margin as needed */
+    margin: 0px 30px; /* Adjust margin as needed */
     width: 100%;
     padding:0;
 }
@@ -106,10 +110,6 @@ upperTriangle(out_both) = lowerTriangle(out_both, byrow=TRUE)
 #Make interactive plots
 ##Spatial
 #add white columns that are blank to spatially separate diagram
-#cols2 <- c(S = "gray25",G = "darkblue",C = "darkmagenta",V = "plum1",O = "olivedrab2",
-#           H = "violetred",I = "brown4",E = "#F0E442",L = "royalblue3",B = "indianred3","T" = "#009E73",
-#           Sx = "lightsalmon","F" = "#6EE2FF",Ox="maroon", Sal="brown2",W = "chocolate1",D = "darkgreen",M="yellow4", U = "tan")
-
 
 
 cols_s <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323","#F0E442","#4169E1","#009E73","#6EE2FF","#B03060","#006400",
@@ -124,20 +124,20 @@ p1 <- chorddiag(out_spatialb2, groupColors = cols_s, showGroupnames = FALSE,grou
 
 ##Genetic
 #add white columns that are blank to spatially separate diagram
-cols_gb <- c("#FFBBFF","#B3EE3A", "white","white","white","white","white","white","#00008B","white","white","white","white","white","white")
-ad <- rep(0,2)
-out_genb2 = cbind(out_genb1[,c(1:2)],ad,ad,ad,ad,ad,ad,out_genb1[,c(3)],ad,ad,ad,ad,ad,ad)
-out_genb2 = rbind(out_genb2[c(1:2),],ad,ad,ad,ad,ad,ad,out_genb2[c(3),],ad,ad,ad,ad,ad,ad)
+cols_gb <- c("#FFBBFF","#B3EE3A","#D02090","#D2B48C", "white","white","white","white","white","white","#00008B","white","white","white","white","white","white")
+ad <- rep(0,4)
+out_genb2 = cbind(out_gen[,c(1:4)],ad,ad,ad,ad,ad,ad,out_gen[,c(5)],ad,ad,ad,ad,ad,ad)
+out_genb2 = rbind(out_genb2[c(1:4),],ad,ad,ad,ad,ad,ad,out_genb2[c(5),],ad,ad,ad,ad,ad,ad)
 
 p2 <- chorddiag(out_genb2, groupColors = cols_gb, showGroupnames = FALSE,groupPadding = 2,showTooltips = TRUE,showZeroTooltips = FALSE,tickInterval=10,ticklabelFontsize=0,precision=3,groupnamePadding = 0,width = 350, height=350, margin=10)
 #q
 
 #Both
-cols_b <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323","#F0E442", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF","#FF7F24", "white","white","white","white","white","white","#00008B","#404040","white","white","white","white","white","white")
+cols_b <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323","#F0E442", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF","#006400", "#8B8B00","#D2B48C", "white","white","white","white","white","white","#00008B","#404040","white","white","white","white","white","white")
 
 ad <- rep(0,13)
-out_bothb2 = cbind(out_bothb1[,c(1:11)],ad,ad,ad,ad,ad,ad,out_bothb1[,c(12:13)],ad,ad,ad,ad,ad,ad)
-out_bothb2 = rbind(out_bothb2[c(1:11),],ad,ad,ad,ad,ad,ad,out_bothb2[c(12:13),],ad,ad,ad,ad,ad,ad)
+out_bothb2 = cbind(out_both[,c(1:13)],ad,ad,ad,ad,ad,ad,out_both[,c(14:15)],ad,ad,ad,ad,ad,ad)
+out_bothb2 = rbind(out_bothb2[c(1:13),],ad,ad,ad,ad,ad,ad,out_bothb2[c(14:15),],ad,ad,ad,ad,ad,ad)
 
 p3 <- chorddiag(out_bothb2, groupColors = cols_b, showGroupnames = FALSE,groupPadding = 2,showTooltips = TRUE,showZeroTooltips = FALSE,tickInterval=10,ticklabelFontsize=0, precision=3,groupnamePadding = 0,width = 350, height=350, margin=10)
 
@@ -178,81 +178,88 @@ layout
 
 ############## SMALL SPATIAL SCALES ONLY ##############
 dfs<-df %>% 
-  filter(str_detect(Category, pattern = "J"))
-#Spatial = S, Community = C, Genetic = G
-# Small-scale = J, Big = K
+  filter(str_detect(Category, pattern = "Sm,"))
 
 #Get spatial gap matrix
 spatial1<-dfs %>% 
-  filter(str_detect(Category, pattern = "S") & !str_detect(Category, pattern = "G"))
+  filter(str_detect(Category, pattern = "S,") & !str_detect(Category, pattern = "G,"))
 out_spatial1 <- crossprod(table(subset(stack(setNames(lapply(strsplit(spatial1$Category, 
-                                                                      "[][]|,\\s*"), trimws), spatial1$Id))[2:1], nzchar(values))))
+                                                                 "[][]|,\\s*"), trimws), spatial1$Id))[2:1], nzchar(values))))
 diag(out_spatial1) <- 0
-#remove U and M category (misc. and unknown)
-out_spatial1 <- out_spatial1[, !colnames(out_spatial1) %in% c("U","M")] 
-out_spatial1 <- out_spatial1[!rownames(out_spatial1) %in% c("U","M"),]
+
+#Set an order to display categories
+custom_order1<-c("V","O","H","I","E","L","B","T","Sx","F","Ox","Sal","W","D","M","U","C","G","S")
+
+#Filter categories that exist in this subset
+custom_order_a <- intersect(custom_order1,colnames(out_spatial1))
 
 #Arrange 
-custom_order<-c("V","O","H","I","E","B","T","C","S")
-out_spatial1 <- out_spatial1[custom_order, custom_order]
-out_spatial1[upper.tri(out_spatial1)] <- NA
-upperTriangle(out_spatial1) = lowerTriangle(out_spatial1, byrow=TRUE)
+out_spatial1 <- out_spatial1[custom_order_a, custom_order_a]
 
 #get genetic gap matrix
 genetic1<-dfs %>% 
-  filter(str_detect(Category, pattern = "G") & !str_detect(Category, pattern = "S"))
-out_gen1 <- crossprod(table(subset(stack(setNames(lapply(strsplit(genetic1$Category,  "[][]|,\\s*"), trimws), genetic1$Id))[2:1], nzchar(values))))
+  filter(str_detect(Category, pattern = "G,") & !str_detect(Category, pattern = "S,"))
+out_gen1 <- crossprod(table(subset(stack(setNames(lapply(strsplit(genetic1$Category, 
+                                                                 "[][]|,\\s*"), trimws), genetic1$Id))[2:1], nzchar(values))))
 diag(out_gen1) <- 0
-out_gen1 <- out_gen1[, !colnames(out_gen1) %in% c("U","M")] 
-out_gen1 <- out_gen1[!rownames(out_gen1) %in% c("U","M"),]
-#Arrange 
-custom_order<-c("V","O","H","I","L","B","T","F","G")
-out_gen1 <- out_gen1[custom_order, custom_order]
-out_gen1[upper.tri(out_gen1)] <- NA
-upperTriangle(out_gen1) = lowerTriangle(out_gen1, byrow=TRUE)
 
+#Arrange 
+custom_order_b <- intersect(custom_order1,colnames(out_gen1))
+out_gen1 <- out_gen1[custom_order_b, custom_order_b]
 
 #get both gap matrix
 both1 <- dfs %>%
-  filter(str_detect(Category, pattern = "G") & str_detect(Category, pattern = "S"))
-out_both1 <- crossprod(table(subset(stack(setNames(lapply(strsplit(both1$Category, "[][]|,\\s*"), trimws), both1$Id))[2:1], nzchar(values))))
+  filter(str_detect(Category, pattern = "G,") & str_detect(Category, pattern = "S,"))
+out_both1 <- crossprod(table(subset(stack(setNames(lapply(strsplit(both1$Category, 
+                                                                 "[][]|,\\s*"), trimws), both1$Id))[2:1], nzchar(values))))
 diag(out_both1) <- 0
-out_both1 <- out_both1[, !colnames(out_both1) %in% c("U","M")] 
-out_both1 <- out_both1[!rownames(out_both1) %in% c("U","M"),]
+
 #Arrange 
-custom_order<-c("V","O","H","I","L","B","T","Sx","F","W","G","S")
-out_both1 <- out_both1[custom_order, custom_order]
+custom_order_c <- intersect(custom_order1,colnames(out_both1))
+out_both1 <- out_both1[custom_order_c, custom_order_c]
+
+out_spatial1[upper.tri(out_spatial1)] <- NA
+upperTriangle(out_spatial1) = lowerTriangle(out_spatial1, byrow=TRUE)
+out_gen1[upper.tri(out_gen1)] <- NA
+upperTriangle(out_gen1) = lowerTriangle(out_gen1, byrow=TRUE)
+out_both1[upper.tri(out_both1)] <- NA
+upperTriangle(out_both1) = lowerTriangle(out_both1, byrow=TRUE)
 
 #Make interactive plots
 
-
 ##Spatial
-#add white columns that are blank to spatially separate diagram
-cols_s <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323", "#F0E442","#CD5555", "#009E73","white","white","white","white","white","white","#8B008B","#404040","white","white","white","white","white","white")
 
-ad <- rep(0,7)
-out_spatial2 = cbind(out_spatial1[,c(1:7)],ad,ad,ad,ad,ad,ad,out_spatial1[,c(8:9)],ad,ad,ad,ad,ad,ad)
-out_spatial2 = rbind(out_spatial2[c(1:7),],ad,ad,ad,ad,ad,ad,out_spatial2[c(8:9),],ad,ad,ad,ad,ad,ad)
+cols_s <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323","#F0E442", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF","#B03060",
+           "#EE3B3B", "#FF7F24","#006400", "#8B8B00","#D2B48C", "white","white","white","white","white","white",
+           "#8B008B","#404040","white","white","white","white","white","white")
+
+ad <- rep(0,16)
+out_spatial2 = cbind(out_spatial1[,c(1:16)],ad,ad,ad,ad,ad,ad,out_spatial1[,c(17:18)],ad,ad,ad,ad,ad,ad)
+out_spatial2 = rbind(out_spatial2[c(1:16),],ad,ad,ad,ad,ad,ad,out_spatial2[c(17:18),],ad,ad,ad,ad,ad,ad)
 
 p1s <- chorddiag(out_spatial2, groupColors = cols_s, showGroupnames = FALSE,groupPadding = 2,showTooltips = TRUE,showZeroTooltips = FALSE,precision=3,tickInterval=10,ticklabelFontsize=0,groupnamePadding = 0,width = 350, height=350, margin=10)
-#p
+
 
 ##Genetic
 #add white columns that are blank to spatially separate diagram
-cols_g <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323", "#3A5FCD", "#CD5555","#009E73","#6EE2FF", "white","white","white","white","white","white","#00008B","white","white","white","white","white","white")
-ad <- rep(0,8)
-out_gen2 = cbind(out_gen1[,c(1:8)],ad,ad,ad,ad,ad,ad,out_gen1[,c(9)],ad,ad,ad,ad,ad,ad)
-out_gen2 = rbind(out_gen2[c(1:8),],ad,ad,ad,ad,ad,ad,out_gen2[c(9),],ad,ad,ad,ad,ad,ad)
+cols_g <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323","#F0E442", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF",
+            "#EE3B3B", "#FF7F24","#006400", "#8B8B00","#D2B48C", "white","white","white","white","white","white",
+           "#8B008B","#00008B","white","white","white","white","white","white")
+
+ad <- rep(0,15)
+out_gen2 = cbind(out_gen1[,c(1:15)],ad,ad,ad,ad,ad,ad,out_gen1[,c(16:17)],ad,ad,ad,ad,ad,ad)
+out_gen2 = rbind(out_gen2[c(1:15),],ad,ad,ad,ad,ad,ad,out_gen2[c(16:17),],ad,ad,ad,ad,ad,ad)
 
 p2s <- chorddiag(out_gen2, groupColors = cols_g, showGroupnames = FALSE,groupPadding = 2,showTooltips = TRUE,precision=3,showZeroTooltips = FALSE,tickInterval=10,ticklabelFontsize=0,groupnamePadding = 0,width = 350, height=350, margin=10)
-#q
 
 #Both
-cols_b <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF","#FF7F24", "white","white","white","white","white","white","#00008B","#404040","white","white","white","white","white","white")
+cols_b <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF","#B03060",
+             "#FF7F24","#006400", "#8B8B00","#D2B48C", "white","white","white","white","white","white",
+           "#8B008B","#00008B","#404040","white","white","white","white","white","white")
 
-ad <- rep(0,12)
-out_both2 = cbind(out_both1[,c(1:10)],ad,ad,ad,ad,ad,ad,out_both1[,c(11:12)],ad,ad,ad,ad,ad,ad)
-out_both2 = rbind(out_both2[c(1:10),],ad,ad,ad,ad,ad,ad,out_both2[c(11:12),],ad,ad,ad,ad,ad,ad)
+ad <- rep(0,14)
+out_both2 = cbind(out_both1[,c(1:14)],ad,ad,ad,ad,ad,ad,out_both1[,c(15:17)],ad,ad,ad,ad,ad,ad)
+out_both2 = rbind(out_both2[c(1:14),],ad,ad,ad,ad,ad,ad,out_both2[c(15:17),],ad,ad,ad,ad,ad,ad)
 
 p3s <- chorddiag(out_both2, groupColors = cols_b, showGroupnames = FALSE, groupPadding = 2,showTooltips = TRUE,precision=3, showZeroTooltips = FALSE,tickInterval=10,ticklabelFontsize=0,groupnamePadding = 0,width = 350, height=350, margin=10)
 
