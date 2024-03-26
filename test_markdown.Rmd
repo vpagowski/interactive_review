@@ -22,7 +22,6 @@ knitr::opts_chunk$set(echo = TRUE)
   margin-left: 50px;
 }
 
-
 .graph-container {
   margin: 0px 30px; /* Adjust margin as needed */
     width: 100%;
@@ -42,6 +41,8 @@ knitr::opts_chunk$set(echo = TRUE)
   font-style: italic; /* Make the font italicized */
     font-size: 20px; /* Set smaller font size */
 }
+
+
 </style>
 
 ```{r eval =TRUE, echo=FALSE, message = FALSE, warning = FALSE,fig.align = 'left' }
@@ -293,37 +294,48 @@ layout2
 ```
 
 
+
+
+<div style="width:13000px;height:100px">
+## Big Disjunctions
 ```{r eval =TRUE, echo=FALSE, message = FALSE, warning = FALSE}
-#Just look at fish Papers: Small spatial scales
-library(shiny)
-library(ggplot2)
-library(DT)
-
 ###############
-##Small spatial
+##Big spatial scales
 ##################
-taxa<- c("Be", "Fi", "Al", "In", "Ma", "Mo","Mu","Ot","Plankton","Pplankton")
-all_col <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323","#F0E442", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF","#B03060",
-           "#EE3B3B", "#FF7F24","#006400", "#8B8B00","#D2B48C", "#8B008B","#00008B","#404040")
 
-order_gp <- cbind(custom_order1,all_col)
 ui <- fluidPage(
   
   # Application title
   titlePanel("Filtered plots"),
   
-  sidebarLayout(
-    sidebarPanel(
-      uiOutput("selected_taxa"),
-      div(actionButton("add_plot", "See the plot"), 
-          actionButton("clear", "Clear All")
-          )
+  fluidRow(
+    column(width = 6,
+           sidebarLayout(
+             sidebarPanel(
+               uiOutput("selected_taxa1"),
+               div(actionButton("add_plot1", "Plot")
+               )
+             ),
+             mainPanel(
+               chorddiag::chorddiagOutput("chordDiagram1")
+             )
+           )
     ),
-    
-    mainPanel(chorddiag::chorddiagOutput("chordDiagram"),
+    column(width = 6,
+           sidebarLayout(
+             sidebarPanel(
+               uiOutput("selected_taxa2"),
+               div(actionButton("add_plot2", "Plot")
+               )
+             ),
+             mainPanel(
+               chorddiag::chorddiagOutput("chordDiagram2")
+             )
+           )
     )
   )
 )
+
 
 
 server <- function(input, output, session) {
@@ -331,15 +343,22 @@ server <- function(input, output, session) {
   taxa_list <- reactive({
     unique(taxa)
   })
+  taxa_list1 <- reactive({
+    unique(taxa1)
+  })
   
   # This function give us a select list input, in order to be able to select the gene that we want to see
-  output$selected_taxa <- renderUI({
+  output$selected_taxa1 <- renderUI({
     selectizeInput(inputId = "taxa", "Select a taxon", choices=taxa_list(), options=list(maxOptions = length(taxa_list())))
+  })
+  
+  output$selected_taxa2 <- renderUI({
+    selectizeInput(inputId = "taxa1", "Select a taxon", choices=taxa_list1(), options=list(maxOptions = length(taxa_list1())))
   })
   
   mydata <- reactive({
     req(input$taxa)
-      df <- spatial1 %>% 
+      df <- dfb %>% 
         filter(str_detect(Category, pattern = input$taxa))
       out_df <- crossprod(table(subset(stack(setNames(lapply(strsplit(df$Category, 
                                                                  "[][]|,\\s*"), trimws), df$Id))[2:1], nzchar(values))))
@@ -351,8 +370,33 @@ server <- function(input, output, session) {
 
   use_cols <- reactive({
   req(input$taxa)
-  df <- spatial1 %>% 
+  df <- dfb %>% 
     filter(str_detect(Category, pattern = input$taxa))
+  out_df <- crossprod(table(subset(stack(setNames(lapply(strsplit(df$Category, 
+                                                           "[][]|,\\s*"), trimws), df$Id))[2:1], nzchar(values))))
+  diag(out_df) <- 0
+  custom_order_f <- intersect(custom_order1, colnames(out_df))
+  out_df <- out_df[custom_order_f, custom_order_f]
+  cols <- subset((order_gp[,2]), custom_order1 %in% colnames(out_df))
+  cols
+})
+
+  mydata1 <- reactive({
+    req(input$taxa1)
+      df <- dfb %>% 
+        filter(str_detect(Category, pattern = input$taxa1))
+      out_df <- crossprod(table(subset(stack(setNames(lapply(strsplit(df$Category, 
+                                                                 "[][]|,\\s*"), trimws), df$Id))[2:1], nzchar(values))))
+      diag(out_df) <- 0
+      custom_order_f <- intersect(custom_order1,colnames(out_df))
+      out_df <- out_df[custom_order_f, custom_order_f]
+      out_df
+  })
+
+  use_cols1 <- reactive({
+  req(input$taxa1)
+  df <- dfb %>% 
+    filter(str_detect(Category, pattern = input$taxa1))
   out_df <- crossprod(table(subset(stack(setNames(lapply(strsplit(df$Category, 
                                                            "[][]|,\\s*"), trimws), df$Id))[2:1], nzchar(values))))
   diag(out_df) <- 0
@@ -366,14 +410,162 @@ server <- function(input, output, session) {
 
   v <- reactiveValues(plot = NULL, table=NULL)
   
-  observeEvent(input$add_plot, {
-     output$chordDiagram <- renderChorddiag({ chorddiag::chorddiag(mydata(), groupColors = use_cols(), showGroupnames = FALSE, groupPadding = 2,showTooltips = TRUE,precision=3, showZeroTooltips = FALSE,tickInterval=10,ticklabelFontsize=0,groupnamePadding = 0,width = 350, height=350, margin=10)
+  observeEvent(input$add_plot1, {
+     output$chordDiagram1 <- renderChorddiag({ chorddiag::chorddiag(mydata(), groupColors = use_cols(), showGroupnames = FALSE, groupPadding = 2,showTooltips = TRUE,precision=3, showZeroTooltips = FALSE,tickInterval=10,ticklabelFontsize=0,groupnamePadding = 0,width = 350, height=350, margin=10)
+     })
+  })
+  
+  observeEvent(input$add_plot2, {
+     output$chordDiagram2 <- renderChorddiag({ chorddiag::chorddiag(mydata1(), groupColors = use_cols1(), showGroupnames = FALSE, groupPadding = 2,showTooltips = TRUE,precision=3, showZeroTooltips = FALSE,tickInterval=10,ticklabelFontsize=0,groupnamePadding = 0,width = 350, height=350, margin=10)
      })
   })
 
   
 }
 
-shinyApp(ui, server)
+shinyApp(ui, server,options = list(width = 1300))
 ```
+
+
+
+## Small Disjunctions
+```{r eval =TRUE, echo=FALSE, message = FALSE, warning = FALSE}
+#Just look at fish Papers: Small spatial scales
+library(shiny)
+library(DT)
+
+###############
+##Small spatial scales
+##################
+taxa<- c("Be", "Fi", "Al", "In", "Ma", "Mo","Mu","Ot","Plankton","Pplankton")
+taxa1<- c("Be", "Fi", "Al", "In", "Ma", "Mo","Mu","Ot","Plankton","Pplankton")
+
+all_col <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323","#F0E442", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF","#B03060",
+           "#EE3B3B", "#FF7F24","#006400", "#8B8B00","#D2B48C", "#8B008B","#00008B","#404040")
+
+order_gp <- cbind(custom_order1,all_col)
+
+ui <- fluidPage(
+  
+
+  # Application title
+  titlePanel("Filtered plots"),
+  fluidRow(
+    column(width = 6,
+           sidebarLayout(
+             sidebarPanel(
+               uiOutput("selected_taxa1"),
+               div(actionButton("add_plot1", "Plot")
+               )
+             ),
+             mainPanel(
+               chorddiag::chorddiagOutput("chordDiagram1")
+             )
+           )
+    ),
+    column(width = 6,
+           sidebarLayout(
+             sidebarPanel(
+               uiOutput("selected_taxa2"),
+               div(actionButton("add_plot2", "Plot")
+               )
+             ),
+             mainPanel(
+               chorddiag::chorddiagOutput("chordDiagram2")
+             )
+           )
+    )
+  )
+)
+
+
+server <- function(input, output, session) {
+  ## This function gives us the list of genes.
+  taxa_list <- reactive({
+    unique(taxa)
+  })
+  taxa_list1 <- reactive({
+    unique(taxa1)
+  })
+  
+  # This function give us a select list input, in order to be able to select the gene that we want to see
+  output$selected_taxa1 <- renderUI({
+    selectizeInput(inputId = "taxa", "Select a taxon", choices=taxa_list(), options=list(maxOptions = length(taxa_list())))
+  })
+  
+  output$selected_taxa2 <- renderUI({
+    selectizeInput(inputId = "taxa1", "Select a taxon", choices=taxa_list1(), options=list(maxOptions = length(taxa_list1())))
+  })
+  
+  mydata <- reactive({
+    req(input$taxa)
+      df <- dfs %>% 
+        filter(str_detect(Category, pattern = input$taxa))
+      out_df <- crossprod(table(subset(stack(setNames(lapply(strsplit(df$Category, 
+                                                                 "[][]|,\\s*"), trimws), df$Id))[2:1], nzchar(values))))
+      diag(out_df) <- 0
+      custom_order_f <- intersect(custom_order1,colnames(out_df))
+      out_df <- out_df[custom_order_f, custom_order_f]
+      out_df
+  })
+
+  use_cols <- reactive({
+  req(input$taxa)
+  df <- dfs %>% 
+    filter(str_detect(Category, pattern = input$taxa))
+  out_df <- crossprod(table(subset(stack(setNames(lapply(strsplit(df$Category, 
+                                                           "[][]|,\\s*"), trimws), df$Id))[2:1], nzchar(values))))
+  diag(out_df) <- 0
+  custom_order_f <- intersect(custom_order1, colnames(out_df))
+  out_df <- out_df[custom_order_f, custom_order_f]
+  cols <- subset((order_gp[,2]), custom_order1 %in% colnames(out_df))
+  cols
+})
+
+  mydata1 <- reactive({
+    req(input$taxa1)
+      df <- dfs %>% 
+        filter(str_detect(Category, pattern = input$taxa1))
+      out_df <- crossprod(table(subset(stack(setNames(lapply(strsplit(df$Category, 
+                                                                 "[][]|,\\s*"), trimws), df$Id))[2:1], nzchar(values))))
+      diag(out_df) <- 0
+      custom_order_f <- intersect(custom_order1,colnames(out_df))
+      out_df <- out_df[custom_order_f, custom_order_f]
+      out_df
+  })
+
+  use_cols1 <- reactive({
+  req(input$taxa1)
+  df <- dfs %>% 
+    filter(str_detect(Category, pattern = input$taxa1))
+  out_df <- crossprod(table(subset(stack(setNames(lapply(strsplit(df$Category, 
+                                                           "[][]|,\\s*"), trimws), df$Id))[2:1], nzchar(values))))
+  diag(out_df) <- 0
+  custom_order_f <- intersect(custom_order1, colnames(out_df))
+  out_df <- out_df[custom_order_f, custom_order_f]
+  cols <- subset((order_gp[,2]), custom_order1 %in% colnames(out_df))
+  cols
+})
+
+  
+
+  v <- reactiveValues(plot = NULL, table=NULL)
+  
+  observeEvent(input$add_plot1, {
+     output$chordDiagram1 <- renderChorddiag({ chorddiag::chorddiag(mydata(), groupColors = use_cols(), showGroupnames = FALSE, groupPadding = 2,showTooltips = TRUE,precision=3, showZeroTooltips = FALSE,tickInterval=10,ticklabelFontsize=0,groupnamePadding = 0,width = 350, height=350, margin=10)
+     })
+  })
+  
+  observeEvent(input$add_plot2, {
+     output$chordDiagram2 <- renderChorddiag({ chorddiag::chorddiag(mydata1(), groupColors = use_cols1(), showGroupnames = FALSE, groupPadding = 2,showTooltips = TRUE,precision=3, showZeroTooltips = FALSE,tickInterval=10,ticklabelFontsize=0,groupnamePadding = 0,width = 350, height=350, margin=10)
+     })
+  })
+
+  
+}
+
+
+shinyApp(ui, server,options = list(width = 1300))
+```
+
 
