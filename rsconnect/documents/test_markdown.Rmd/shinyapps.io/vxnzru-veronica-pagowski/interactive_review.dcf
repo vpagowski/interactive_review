@@ -1,0 +1,12 @@
+name: interactive_review
+title: interactive_review
+username: vxnzru-veronica-pagowski
+account: vxnzru-veronica-pagowski
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 11588629
+bundleId: 8418411
+url: https://vxnzru-veronica-pagowski.shinyapps.io/interactive_review/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
