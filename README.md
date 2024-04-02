@@ -2,7 +2,7 @@
 This page and documentation is still in progress!
 
 interactive graphics to visualize review results
-page at: [https://vpagowski.github.io/interactive_review/test_markdown.html](https://vxnzru-veronica-pagowski.shinyapps.io/interactive_review_plots/)
+page at: https://vxnzru-veronica-pagowski.shinyapps.io/interactive_review_plots/
 
 # Overview of files:
 Files to make plots
