@@ -12,9 +12,9 @@ Files to make plots
 
 # Overview of code:
 Code to make plots
-4) Interative_review_markdown.Rmd: code to reproduce interactive shiny graphics, using the chorddiag R package. At the link above.
-5) Figure2+3.R: Code to make figure 2 in the paper, and part of figure 3 (first set of histograms)
-6) Figure3_histograms2.R: Code to make Figure 3 + supp. Fig 2 in the paper
+1) Interative_review_markdown.Rmd: code to reproduce interactive shiny graphics, using the chorddiag R package. At the link above.
+2) Figure2+3.R: Code to make figure 2 in the paper, and part of figure 3 (first set of histograms)
+3) Figure3_histograms2.R: Code to make Figure 3 + supp. Fig 2 in the paper
 
 More coming soon!
 
