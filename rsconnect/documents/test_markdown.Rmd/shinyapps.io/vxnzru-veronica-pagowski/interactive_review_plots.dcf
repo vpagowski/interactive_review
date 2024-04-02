@@ -1,0 +1,12 @@
+name: interactive_review_plots
+title: interactive_review_plots
+username: vxnzru-veronica-pagowski
+account: vxnzru-veronica-pagowski
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 11588648
+bundleId: 8422400
+url: https://vxnzru-veronica-pagowski.shinyapps.io/interactive_review_plots/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

@@ -9,8 +9,14 @@ runtime: shiny
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+<div style="width: 1300px;"> <!-- Set the width of the chunk to 100% -->
 
-## Big Disjunctions
+These plots accompany the paper and allow a user to interact with each disjunction type and mechanism to better visualize the results, particularly when chords are small. Big disjunctions refer to spatial scales over 1000km and Small disjunctions refer to spatial scales under 1000km. 
+
+Each color is defined below and tick marks indicate 10 papers each. When you hover over a category or chord, you can also see the number of papers corresponding to that category or chord.
+
+To make your own plots, scroll down to the "Filtered plots"
+
 <style>
   body {
     position: absolute;
@@ -21,30 +27,33 @@ knitr::opts_chunk$set(echo = TRUE)
   flex-direction: row;
   margin-left: 50px;
 }
-
 .graph-container {
   margin: 0px 30px; /* Adjust margin as needed */
     width: 100%;
   padding:0;
 }
 
+.graph-container h1 {
+  width: 90%;
+    font-size: 20px; /* Set smaller font size */
+}
+
 .graph-container h2 {
   width: 90%;
-  top: 220px; 
   font-style: italic; /* Make the font italicized */
     font-size: 20px; /* Set smaller font size */
 }
 
 .graph-container h3 {
   width: 90%;
-  top: 690px; 
   font-style: italic; /* Make the font italicized */
     font-size: 20px; /* Set smaller font size */
 }
 
-
 </style>
 
+
+## Big Disjunctions
 ```{r eval =TRUE, echo=FALSE, message = FALSE, warning = FALSE,fig.align = 'left' }
 ###Associations plots
 library(tidyverse)
@@ -53,8 +62,6 @@ library(htmlwidgets)
 library(gdata)
 library(htmltools)
 library(gplots)
-
-setwd("~/Desktop/Review")
 
 df<- read.csv("articles_03_24_all.csv", header = TRUE)
 df<-df %>% 
@@ -66,13 +73,13 @@ dfb<-df %>%
 
 #Get spatial gap matrix
 spatial<-dfb %>% 
-  filter(str_detect(Category, pattern = "S,") & !str_detect(Category, pattern = "G,"))
+  filter(str_detect(Category, pattern = "Spatial,") & !str_detect(Category, pattern = "Genetic,"))
 out_spatial <- crossprod(table(subset(stack(setNames(lapply(strsplit(spatial$Category, 
                                                                  "[][]|,\\s*"), trimws), spatial$Id))[2:1], nzchar(values))))
 diag(out_spatial) <- 0
 
 #Set an order to display categories
-custom_order1<-c("V","O","H","I","E","L","B","T","Sx","F","Ox","Sal","W","D","M","U","C","G","S")
+custom_order1<-c("Historical","Oceanography","Habitat","Invasive","Effort","Larval_duration","Behavior","Temperature","Selection_incompatibility","Competition","Oxygen","Salinity","Climate_change","Deep_sea","Misc","Unknown","Community","Genetic","Spatial")
 
 #Filter categories that exist in this subset
 custom_order_a <- intersect(custom_order1,colnames(out_spatial))
@@ -82,7 +89,7 @@ out_spatial <- out_spatial[custom_order_a, custom_order_a]
 
 #get genetic gap matrix
 genetic<-dfb %>% 
-  filter(str_detect(Category, pattern = "G,") & !str_detect(Category, pattern = "S,"))
+  filter(str_detect(Category, pattern = "Genetic,") & !str_detect(Category, pattern = "Spatial,"))
 out_gen <- crossprod(table(subset(stack(setNames(lapply(strsplit(genetic$Category, 
                                                                  "[][]|,\\s*"), trimws), genetic$Id))[2:1], nzchar(values))))
 diag(out_gen) <- 0
@@ -93,7 +100,7 @@ out_gen <- out_gen[custom_order_b, custom_order_b]
 
 #get both gap matrix
 both <- dfb %>%
-  filter(str_detect(Category, pattern = "G,") & str_detect(Category, pattern = "S,"))
+  filter(str_detect(Category, pattern = "Genetic,") & str_detect(Category, pattern = "Spatial,"))
 out_both <- crossprod(table(subset(stack(setNames(lapply(strsplit(both$Category, 
                                                                  "[][]|,\\s*"), trimws), both$Id))[2:1], nzchar(values))))
 diag(out_both) <- 0
@@ -149,6 +156,7 @@ title_p1 <- "Spatial"
 title_p2 <- "Genetic"
 title_p3 <- "Both"
 
+
 # Create div layout with custom CSS and titles
 layout <- tags$div(
   class = "layout-container",
@@ -166,9 +174,10 @@ layout <- tags$div(
     class = "graph-container",
     tags$h2(title_p3),  # Add title for graph p3
     p3
-  )
+  ),
 )
 layout
+
 #setwd("/Users/veronicapagowski/Desktop/interactive_app/interactive_review")
 #saveWidget(p, "chord_test2.html", selfcontained = TRUE, knitrOptions = list())
 
@@ -178,20 +187,20 @@ layout
 ## Small Disjunctions
 ```{r eval =TRUE, echo=FALSE, message = FALSE, warning = FALSE }
 
+
 ############## SMALL SPATIAL SCALES ONLY ##############
 dfs<-df %>% 
   filter(str_detect(Category, pattern = "Sm,"))
 
 #Get spatial gap matrix
 spatial1<-dfs %>% 
-  filter(str_detect(Category, pattern = "S,") & !str_detect(Category, pattern = "G,"))
+  filter(str_detect(Category, pattern = "Spatial,") & !str_detect(Category, pattern = "Genetic,"))
 out_spatial1 <- crossprod(table(subset(stack(setNames(lapply(strsplit(spatial1$Category, 
                                                                  "[][]|,\\s*"), trimws), spatial1$Id))[2:1], nzchar(values))))
 diag(out_spatial1) <- 0
 
 #Set an order to display categories
-custom_order1<-c("V","O","H","I","E","L","B","T","Sx","F","Ox","Sal","W","D","M","U","C","G","S")
-
+custom_order1<-c("Historical","Oceanography","Habitat","Invasive","Effort","Larval_duration","Behavior","Temperature","Selection_incompatibility","Competition","Oxygen","Salinity","Climate_change","Deep_sea","Misc","Unknown","Community","Genetic","Spatial")
 #Filter categories that exist in this subset
 custom_order_a <- intersect(custom_order1,colnames(out_spatial1))
 
@@ -200,7 +209,7 @@ out_spatial1 <- out_spatial1[custom_order_a, custom_order_a]
 
 #get genetic gap matrix
 genetic1<-dfs %>% 
-  filter(str_detect(Category, pattern = "G,") & !str_detect(Category, pattern = "S,"))
+  filter(str_detect(Category, pattern = "Genetic,") & !str_detect(Category, pattern = "Spatial,"))
 out_gen1 <- crossprod(table(subset(stack(setNames(lapply(strsplit(genetic1$Category, 
                                                                  "[][]|,\\s*"), trimws), genetic1$Id))[2:1], nzchar(values))))
 diag(out_gen1) <- 0
@@ -211,7 +220,7 @@ out_gen1 <- out_gen1[custom_order_b, custom_order_b]
 
 #get both gap matrix
 both1 <- dfs %>%
-  filter(str_detect(Category, pattern = "G,") & str_detect(Category, pattern = "S,"))
+  filter(str_detect(Category, pattern = "Genetic,") & str_detect(Category, pattern = "Spatial,"))
 out_both1 <- crossprod(table(subset(stack(setNames(lapply(strsplit(both1$Category, 
                                                                  "[][]|,\\s*"), trimws), both1$Id))[2:1], nzchar(values))))
 diag(out_both1) <- 0
@@ -231,7 +240,7 @@ upperTriangle(out_both1) = lowerTriangle(out_both1, byrow=TRUE)
 
 ##Spatial
 cols_s <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323","#F0E442", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF","#B03060",
-           "#EE3B3B", "#FF7F24","#006400", "#8B8B00","#D2B48C", "white","white","white","white","white","white",
+            "#EE3B3B","#FF7F24","#006400", "#8B8B00","#D2B48C", "white","white","white","white","white","white",
            "#8B008B","#404040","white","white","white","white","white","white")
 
 ad <- rep(0,16)
@@ -244,7 +253,7 @@ p1s <- chorddiag(out_spatial2, groupColors = cols_s, showGroupnames = FALSE,grou
 ##Genetic
 #add white columns that are blank to spatially separate diagram
 cols_g <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323","#F0E442", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF",
-            "#EE3B3B", "#FF7F24","#006400", "#8B8B00","#D2B48C", "white","white","white","white","white","white",
+             "#EE3B3B","#FF7F24","#006400", "#8B8B00","#D2B48C", "white","white","white","white","white","white",
            "#8B008B","#00008B","white","white","white","white","white","white")
 
 ad <- rep(0,15)
@@ -293,20 +302,60 @@ layout2
 
 ```
 
+## <span style="font-size: 20px;">Figure Legend</span>
+<div style="width: 100%;"> <!-- Set the width of the chunk to 100% -->
+
+```{r eval =TRUE, echo=FALSE, message = FALSE, warning = FALSE }
+
+legend_data <- c("Historical","Oceanography","Habitat","Invasive","Effort","Larval duration","Behavior","Temperature","Selection/incompatibility","Competition","Oxygen","Salinity","Climate change","Deep sea","Misc","Unknown","Community","Genetic","Spatial")
+legend_colors <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323","#F0E442", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF","#B03060",
+           "#EE3B3B", "#FF7F24","#006400", "#8B8B00","#D2B48C", "#8B008B","#00008B","#404040")
 
 
+plot_legend <- function(custom_order1, legend_colors) {
+  plot(0, 0, type = "n", axes = FALSE, xlab = "", ylab = "",
+       xlim = c(0, 1), ylim = c(0, 1))
+  for (i in 1:length(custom_order1)) {
+    rect(0.1, 1 - i * 0.1, 0.2, 1 - (i - 1) * 0.1,
+         col = legend_colors[i], border = NA)
+    text(0.3, 1 - (i - 0.5) * 0.1, custom_order1[i], adj = 0)
+  }
+}
 
-<div style="width:13000px;height:100px">
+par(mfrow = c(2, 4),mar = c(0, 0, 1, 0)) ;
+plot_legend(legend_data[17:19], legend_colors[17:19])
+title("Disjunction Type", line = 0, adj = 0)  
+plot_legend(legend_data[1:5], legend_colors[1:5])
+title("Disjunction Mechanism", line = 0, adj = 0)  
+plot_legend(legend_data[6:10], legend_colors[6:10])
+plot_legend(legend_data[11:16], legend_colors[11:16])
+
+```
+
+
+## Make your own plots
+Make your own plots here! Filter your chord diagrams by your taxon of interest for either Big or Small disjunctions. To compare taxa within a spatial scale, you can plot two diagrams side by side. 
+
 ## Big Disjunctions
 ```{r eval =TRUE, echo=FALSE, message = FALSE, warning = FALSE}
+library(shinydashboard)
 ###############
 ##Big spatial scales
 ##################
+taxa<- c("Benthic", "Fish", "Algae", "Invertebrate", "Mammal","Multiple","Other","Plankton","Mobile_plankton")
+taxa1<- c("Benthic", "Fish", "Algae", "Invertebrate", "Mammal","Multiple","Other","Plankton","Mobile_plankton")
 
 ui <- fluidPage(
   
   # Application title
   titlePanel("Filtered plots"),
+  dashboardBody(
+    tags$head(
+      tags$style(
+        "body {overflow-y: hidden;}"
+        )
+      )
+    ),
   
   fluidRow(
     column(width = 6,
@@ -411,7 +460,7 @@ server <- function(input, output, session) {
   v <- reactiveValues(plot = NULL, table=NULL)
   
   observeEvent(input$add_plot1, {
-     output$chordDiagram1 <- renderChorddiag({ chorddiag::chorddiag(mydata(), groupColors = use_cols(), showGroupnames = FALSE, groupPadding = 2,showTooltips = TRUE,precision=3, showZeroTooltips = FALSE,tickInterval=10,ticklabelFontsize=0,groupnamePadding = 0,width = 350, height=350, margin=10)
+     output$chordDiagram1 <- renderChorddiag({ chorddiag::chorddiag(mydata(), groupColors = use_cols(), showGroupnames = FALSE, groupPadding = 2,showTooltips = TRUE,precision=3, showZeroTooltips = FALSE,tickInterval=10,ticklabelFontsize=0,groupnamePadding = 0,width = 550, height=350, margin=10)
      })
   })
   
@@ -423,7 +472,7 @@ server <- function(input, output, session) {
   
 }
 
-shinyApp(ui, server,options = list(width = 1300))
+shinyApp(ui, server,options = list(width = 1300, height=600))
 ```
 
 
@@ -437,8 +486,8 @@ library(DT)
 ###############
 ##Small spatial scales
 ##################
-taxa<- c("Be", "Fi", "Al", "In", "Ma", "Mo","Mu","Ot","Plankton","Pplankton")
-taxa1<- c("Be", "Fi", "Al", "In", "Ma", "Mo","Mu","Ot","Plankton","Pplankton")
+taxa<- c("Benthic", "Fish", "Algae", "Invertebrate", "Mammal","Multiple","Other","Plankton","Mobile_plankton")
+taxa1<- c("Benthic", "Fish", "Algae", "Invertebrate", "Mammal","Multiple","Other","Plankton","Mobile_plankton")
 
 all_col <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323","#F0E442", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF","#B03060",
            "#EE3B3B", "#FF7F24","#006400", "#8B8B00","#D2B48C", "#8B008B","#00008B","#404040")
@@ -450,6 +499,13 @@ ui <- fluidPage(
 
   # Application title
   titlePanel("Filtered plots"),
+  dashboardBody(
+    tags$head(
+      tags$style(
+        "body {overflow-y: hidden;}"
+        )
+      )
+    ),
   fluidRow(
     column(width = 6,
            sidebarLayout(
@@ -565,7 +621,7 @@ server <- function(input, output, session) {
 }
 
 
-shinyApp(ui, server,options = list(width = 1300))
+shinyApp(ui, server,options = list(width = 1300, height=600))
 ```
 
 
