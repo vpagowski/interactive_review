@@ -1,11 +1,12 @@
 #Re-create Figure 2 (static chord diagrams) and histograms (split by mechanism type, top row Fig. 3)
-
+#Add a comments
 setwd("/Users/veronicapagowski/Desktop/interactive_app/interactive_review")
 #Load libraries
 library(tidyverse)
 library(circlize)
 library(ggridges)
 library(ggplot2)
+library(plyr)
 library(plyr)
 
 df<- read.csv("articles_03_24_all.csv", header = TRUE)
