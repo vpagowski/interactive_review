@@ -10,6 +10,9 @@ setwd("/Users/veronicapagowski/Desktop/interactive_app/interactive_review")
 df<- read.csv("articles_03_24_histograms.csv", header = TRUE)
 df<-df %>% 
   filter(str_detect(Category, pattern = "nogap",negate=TRUE))
+df<-df %>% 
+  filter(str_detect(Category, pattern = "Deep_sea,",negate=TRUE))
+
 
 #Split into year groups
 df$yr_grouping <- cut(df$year, seq(1980, 2025, 5),dig.lab = 5)
@@ -64,13 +67,13 @@ library(stringr)
 dfs$yr_grouping <- cut(dfs$year, seq(1980, 2025, 5),dig.lab = 5)
 
 dfs$Number<-str_count(dfs$Category, ',')
-dfs$Number <- dfs$Number-2
+dfs$Number <- dfs$Number-1
 
 
 dfb$yr_grouping <- cut(dfb$year, seq(1980, 2025, 5),dig.lab = 5)
 
 dfb$Number<-str_count(dfb$Category, ',')
-dfb$Number <- dfb$Number-2
+dfb$Number <- dfb$Number-1
 
 
 msds <- df %>%                           # Get mean & standard deviation by group

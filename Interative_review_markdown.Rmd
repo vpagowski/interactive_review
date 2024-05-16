@@ -66,6 +66,8 @@ library(gplots)
 df<- read.csv("articles_03_24_all.csv", header = TRUE)
 df<-df %>% 
   filter(str_detect(Category, pattern = "nogap",negate=TRUE))
+df<-df %>% 
+  filter(str_detect(Category, pattern = "Deep_sea,",negate=TRUE))
 
 ############## BIG SPATIAL SCALES ONLY ##############
 dfb<-df %>% 
@@ -79,7 +81,7 @@ out_spatial <- crossprod(table(subset(stack(setNames(lapply(strsplit(spatial$Cat
 diag(out_spatial) <- 0
 
 #Set an order to display categories
-custom_order1<-c("Historical","Oceanography","Habitat","Invasive","Effort","Larval_duration","Behavior","Temperature","Selection_incompatibility","Competition","Oxygen","Salinity","Climate_change","Deep_sea","Misc","Unknown","Community","Genetic","Spatial")
+custom_order1<-c("Historical","Oceanography","Habitat","Invasive","Effort","Larval_duration","Behavior","Temperature","Selection_incompatibility","Competition","Oxygen","Salinity","Climate_change","Misc","Unknown","Genetic","Spatial")
 
 #Filter categories that exist in this subset
 custom_order_a <- intersect(custom_order1,colnames(out_spatial))
@@ -121,13 +123,11 @@ upperTriangle(out_both) = lowerTriangle(out_both, byrow=TRUE)
 #add white columns that are blank to spatially separate diagram
 
 
-cols_s <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323","#F0E442","#4169E1","#009E73","#6EE2FF","#B03060","#006400",
-            "#8B8B00","#D2B48C","white","white","white","white","white","white","#8B008B","#404040",
-            "white","white","white","white","white","white")
+cols_s <- c("#FFBBFF","#B3EE3A","#D02090","#8B008B","#F0E442","#4169E1","#009E73","#FFA07A","#6EE2FF","#AB82FF","#8B8B00","#D2B48C","white","white","white","white","white","white","#404040","white","white","white","white","white","white")
 
 ad <- rep(0,12)
-out_spatialb2 = cbind(out_spatial[,c(1:12)],ad,ad,ad,ad,ad,ad,out_spatial[,c(13:14)],ad,ad,ad,ad,ad,ad)
-out_spatialb2 = rbind(out_spatialb2[c(1:12),],ad,ad,ad,ad,ad,ad,out_spatialb2[c(13:14),],ad,ad,ad,ad,ad,ad)
+out_spatialb2 = cbind(out_spatial[,c(1:12)],ad,ad,ad,ad,ad,ad,out_spatial[,c(13)],ad,ad,ad,ad,ad,ad)
+out_spatialb2 = rbind(out_spatialb2[c(1:12),],ad,ad,ad,ad,ad,ad,out_spatialb2[c(13),],ad,ad,ad,ad,ad,ad)
 
 p1 <- chorddiag(out_spatialb2, groupColors = cols_s, showGroupnames = FALSE,groupPadding = 2,showTooltips = TRUE,showZeroTooltips = FALSE,tickInterval=10,ticklabelFontsize=0,precision=3,groupnamePadding = 0,width = 350, height=350, margin=10)
 
@@ -142,11 +142,11 @@ p2 <- chorddiag(out_genb2, groupColors = cols_gb, showGroupnames = FALSE,groupPa
 #q
 
 #Both
-cols_b <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323","#F0E442", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF","#006400", "#8B8B00","#D2B48C", "white","white","white","white","white","white","#00008B","#404040","white","white","white","white","white","white")
+cols_b <- c("#FFBBFF","#B3EE3A","#D02090","#8B008B","#F0E442", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF", "#8B8B00","#D2B48C", "white","white","white","white","white","white","#00008B","#404040","white","white","white","white","white","white")
 
 ad <- rep(0,13)
-out_bothb2 = cbind(out_both[,c(1:13)],ad,ad,ad,ad,ad,ad,out_both[,c(14:15)],ad,ad,ad,ad,ad,ad)
-out_bothb2 = rbind(out_bothb2[c(1:13),],ad,ad,ad,ad,ad,ad,out_bothb2[c(14:15),],ad,ad,ad,ad,ad,ad)
+out_bothb2 = cbind(out_both[,c(1:12)],ad,ad,ad,ad,ad,ad,out_both[,c(13:14)],ad,ad,ad,ad,ad,ad)
+out_bothb2 = rbind(out_bothb2[c(1:12),],ad,ad,ad,ad,ad,ad,out_bothb2[c(13:14),],ad,ad,ad,ad,ad,ad)
 
 p3 <- chorddiag(out_bothb2, groupColors = cols_b, showGroupnames = FALSE,groupPadding = 2,showTooltips = TRUE,showZeroTooltips = FALSE,tickInterval=10,ticklabelFontsize=0, precision=3,groupnamePadding = 0,width = 350, height=350, margin=10)
 
@@ -191,6 +191,9 @@ layout
 ############## SMALL SPATIAL SCALES ONLY ##############
 dfs<-df %>% 
   filter(str_detect(Category, pattern = "Sm,"))
+dfs<-dfs %>% 
+  filter(str_detect(Category, pattern = "Deep_sea,",negate=TRUE))
+
 
 #Get spatial gap matrix
 spatial1<-dfs %>% 
@@ -200,7 +203,7 @@ out_spatial1 <- crossprod(table(subset(stack(setNames(lapply(strsplit(spatial1$C
 diag(out_spatial1) <- 0
 
 #Set an order to display categories
-custom_order1<-c("Historical","Oceanography","Habitat","Invasive","Effort","Larval_duration","Behavior","Temperature","Selection_incompatibility","Competition","Oxygen","Salinity","Climate_change","Deep_sea","Misc","Unknown","Community","Genetic","Spatial")
+custom_order1<-c("Historical","Oceanography","Habitat","Invasive","Effort","Larval_duration","Behavior","Temperature","Selection_incompatibility","Competition","Oxygen","Salinity","Recent_climate_change","Misc","Unknown","Genetic","Spatial")
 #Filter categories that exist in this subset
 custom_order_a <- intersect(custom_order1,colnames(out_spatial1))
 
@@ -239,37 +242,33 @@ upperTriangle(out_both1) = lowerTriangle(out_both1, byrow=TRUE)
 #Make interactive plots
 
 ##Spatial
-cols_s <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323","#F0E442", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF","#B03060",
-            "#EE3B3B","#FF7F24","#006400", "#8B8B00","#D2B48C", "white","white","white","white","white","white",
-           "#8B008B","#404040","white","white","white","white","white","white")
+cols_s <- c("#FFBBFF","#B3EE3A","#D02090","#8B008B","#F0E442", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF","#B03060","#AB82FF","#FF7F24", "#8B8B00","#D2B48C", "white","white","white","white","white","white","#404040","white","white","white","white","white","white")
 
 ad <- rep(0,16)
-out_spatial2 = cbind(out_spatial1[,c(1:16)],ad,ad,ad,ad,ad,ad,out_spatial1[,c(17:18)],ad,ad,ad,ad,ad,ad)
-out_spatial2 = rbind(out_spatial2[c(1:16),],ad,ad,ad,ad,ad,ad,out_spatial2[c(17:18),],ad,ad,ad,ad,ad,ad)
+out_spatial2 = cbind(out_spatial1[,c(1:15)],ad,ad,ad,ad,ad,ad,out_spatial1[,c(16)],ad,ad,ad,ad,ad,ad)
+out_spatial2 = rbind(out_spatial2[c(1:15),],ad,ad,ad,ad,ad,ad,out_spatial2[c(16),],ad,ad,ad,ad,ad,ad)
 
 p1s <- chorddiag(out_spatial2, groupColors = cols_s, showGroupnames = FALSE,groupPadding = 2,showTooltips = TRUE,showZeroTooltips = FALSE,precision=3,tickInterval=10,ticklabelFontsize=0,groupnamePadding = 0,width = 350, height=350, margin=10)
 
 
 ##Genetic
 #add white columns that are blank to spatially separate diagram
-cols_g <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323","#F0E442", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF",
-             "#EE3B3B","#FF7F24","#006400", "#8B8B00","#D2B48C", "white","white","white","white","white","white",
-           "#8B008B","#00008B","white","white","white","white","white","white")
+cols_g <- c("#FFBBFF","#B3EE3A","#D02090","#8B008B","#F0E442", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF","#AB82FF","#FF7F24", "#8B8B00","#D2B48C", "white","white","white","white","white","white",
+           "#00008B","white","white","white","white","white","white")
 
 ad <- rep(0,15)
-out_gen2 = cbind(out_gen1[,c(1:15)],ad,ad,ad,ad,ad,ad,out_gen1[,c(16:17)],ad,ad,ad,ad,ad,ad)
-out_gen2 = rbind(out_gen2[c(1:15),],ad,ad,ad,ad,ad,ad,out_gen2[c(16:17),],ad,ad,ad,ad,ad,ad)
+out_gen2 = cbind(out_gen1[,c(1:14)],ad,ad,ad,ad,ad,ad,out_gen1[,c(15)],ad,ad,ad,ad,ad,ad)
+out_gen2 = rbind(out_gen2[c(1:14),],ad,ad,ad,ad,ad,ad,out_gen2[c(15),],ad,ad,ad,ad,ad,ad)
 
 p2s <- chorddiag(out_gen2, groupColors = cols_g, showGroupnames = FALSE,groupPadding = 2,showTooltips = TRUE,precision=3,showZeroTooltips = FALSE,tickInterval=10,ticklabelFontsize=0,groupnamePadding = 0,width = 350, height=350, margin=10)
 
 #Both
-cols_b <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF","#B03060",
-             "#FF7F24","#006400", "#8B8B00","#D2B48C", "white","white","white","white","white","white",
-           "#8B008B","#00008B","#404040","white","white","white","white","white","white")
+cols_b <- c("#FFBBFF","#B3EE3A","#D02090","#8B008B", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF","#B03060","#AB82FF",
+             "#FF7F24", "#8B8B00","#D2B48C", "white","white","white","white","white","white","#00008B","#404040","white","white","white","white","white","white")
 
 ad <- rep(0,14)
-out_both2 = cbind(out_both1[,c(1:14)],ad,ad,ad,ad,ad,ad,out_both1[,c(15:17)],ad,ad,ad,ad,ad,ad)
-out_both2 = rbind(out_both2[c(1:14),],ad,ad,ad,ad,ad,ad,out_both2[c(15:17),],ad,ad,ad,ad,ad,ad)
+out_both2 = cbind(out_both1[,c(1:14)],ad,ad,ad,ad,ad,ad,out_both1[,c(15:16)],ad,ad,ad,ad,ad,ad)
+out_both2 = rbind(out_both2[c(1:14),],ad,ad,ad,ad,ad,ad,out_both2[c(15:16),],ad,ad,ad,ad,ad,ad)
 
 p3s <- chorddiag(out_both2, groupColors = cols_b, showGroupnames = FALSE, groupPadding = 2,showTooltips = TRUE,precision=3, showZeroTooltips = FALSE,tickInterval=10,ticklabelFontsize=0,groupnamePadding = 0,width = 350, height=350, margin=10)
 
@@ -307,9 +306,9 @@ layout2
 
 ```{r eval =TRUE, echo=FALSE, message = FALSE, warning = FALSE }
 
-legend_data <- c("Historical","Oceanography","Habitat","Invasive","Effort","Larval duration","Behavior","Temperature","Selection/incompatibility","Competition","Oxygen","Salinity","Climate change","Deep sea","Misc","Unknown","Community","Genetic","Spatial")
-legend_colors <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323","#F0E442", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF","#B03060",
-           "#EE3B3B", "#FF7F24","#006400", "#8B8B00","#D2B48C", "#8B008B","#00008B","#404040")
+legend_data <- c("Historical","Oceanography","Habitat","Invasive","Effort","Larval duration","Behavior","Temperature","Selection/incompatibility","Competition","Oxygen","Salinity","Climate change","Misc","Unknown","Genetic","Spatial")
+legend_colors <- c("#FFBBFF","#B3EE3A","#D02090","#8B008B","#F0E442", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF","#B03060",
+           "#AB82FF", "#FF7F24", "#8B8B00","#D2B48C","#00008B","#404040")
 
 
 plot_legend <- function(custom_order1, legend_colors) {
@@ -323,12 +322,12 @@ plot_legend <- function(custom_order1, legend_colors) {
 }
 
 par(mfrow = c(2, 4),mar = c(0, 0, 1, 0)) ;
-plot_legend(legend_data[17:19], legend_colors[17:19])
+plot_legend(legend_data[16:17], legend_colors[16:17])
 title("Disjunction Type", line = 0, adj = 0)  
 plot_legend(legend_data[1:5], legend_colors[1:5])
 title("Disjunction Mechanism", line = 0, adj = 0)  
 plot_legend(legend_data[6:10], legend_colors[6:10])
-plot_legend(legend_data[11:16], legend_colors[11:16])
+plot_legend(legend_data[11:15], legend_colors[11:15])
 
 ```
 
@@ -489,8 +488,8 @@ library(DT)
 taxa<- c("Benthic", "Fish", "Algae", "Invertebrate", "Mammal","Multiple","Other","Plankton","Mobile_plankton")
 taxa1<- c("Benthic", "Fish", "Algae", "Invertebrate", "Mammal","Multiple","Other","Plankton","Mobile_plankton")
 
-all_col <- c("#FFBBFF","#B3EE3A","#D02090","#8B2323","#F0E442", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF","#B03060",
-           "#EE3B3B", "#FF7F24","#006400", "#8B8B00","#D2B48C", "#8B008B","#00008B","#404040")
+all_col <- c("#FFBBFF","#B3EE3A","#D02090","#8B008B","#F0E442", "#3A5FCD", "#CD5555","#009E73","#FFA07A","#6EE2FF","#B03060",
+           "#AB82FF", "#FF7F24", "#8B8B00","#D2B48C","#00008B","#404040")
 
 order_gp <- cbind(custom_order1,all_col)
 

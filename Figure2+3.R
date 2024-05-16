@@ -12,6 +12,8 @@ library(plyr)
 df<- read.csv("articles_03_24_all.csv", header = TRUE)
 df<-df %>% 
   filter(str_detect(Category, pattern = "nogap",negate=TRUE))
+df<-df %>% 
+  filter(str_detect(Category, pattern = "Deep_sea",negate=TRUE))
 
 ############## BIG SPATIAL SCALES ONLY ##############
 dfb<-df %>% 
@@ -26,7 +28,7 @@ out_spatial <- crossprod(table(subset(stack(setNames(lapply(strsplit(spatial$Cat
 diag(out_spatial) <- 0
 
 #Set an order to display categories
-custom_order1<-c("Historical","Oceanography","Habitat","Invasive","Effort","Larval_duration","Behavior","Temperature","Selection_incompatibility","Competition","Oxygen","Salinity","Climate_change","Misc","Unknown","Deep_sea","Community","Genetic","Spatial")
+custom_order1<-c("Historical","Oceanography","Habitat","Invasive","Effort","Larval_duration","Behavior","Temperature","Selection_incompatibility","Competition","Oxygen","Salinity","Recent_climate_change","Misc","Unknown","Genetic","Spatial")
 
 #Filter categories that exist in this subset
 custom_order_a <- intersect(custom_order1,colnames(out_spatial))
@@ -65,7 +67,7 @@ out_both[upper.tri(out_both)] <- NA
 
 ############## SMALL SPATIAL SCALES ONLY ##############
 #Some repetition here, left for ease fo running separately
-custom_order2<-c("Historical","Oceanography","Habitat","Invasive","Effort","Larval_duration","Behavior","Temperature","Selection_incompatibility","Competition","Oxygen","Salinity","Climate_change","Misc","Unknown","Deep_sea","Community","Genetic","Spatial")
+custom_order2<-c("Historical","Oceanography","Habitat","Invasive","Effort","Larval_duration","Behavior","Temperature","Selection_incompatibility","Competition","Oxygen","Salinity","Recent_climate_change","Misc","Unknown","Genetic","Spatial")
 
 dfs<-df %>% 
   filter(str_detect(Category, pattern = "Sm,"))
@@ -107,7 +109,7 @@ out_both1 <- out_both1[custom_order_c1, custom_order_c1]
 #Make plots
 #add groups for spacing
 group <- c(Historical = "A", Oceanography = "A", Habitat = "A", Invasive = "A", Effort = "A", Larval_duration = "A",
-           Behavior = "A", Temperature = "A", Selection_incompatibility = "A", Competition = "A",Oxygen ="A",Salinity = "A",Climate_change ="A", Deep_sea="A", Misc = "A",Unknown = "A" ,Genetic = "B", Community = "B", Spatial = "B")
+           Behavior = "A", Temperature = "A", Selection_incompatibility = "A", Competition = "A",Oxygen ="A",Salinity = "A",Recent_climate_change ="A", Misc = "A",Unknown = "A" ,Genetic = "B", Spatial = "B")
 
 #We are interested in one way associations, make matrix a triagle (ie don't repeat the same values in a square matrix)
 out_spatial1[upper.tri(out_spatial1)] <- NA
@@ -118,12 +120,13 @@ circos.clear()
 
 
 #Assign colors
-cols2 <- c(Spatial = "gray25",Genetic = "darkblue",Community = "darkmagenta",Historical = "plum1",Oceanography = "olivedrab2",
-           Habitat = "violetred",Invasive = "brown4",Effort = "#F0E442",Larval_duration = "royalblue3",Behavior = "indianred3",Temperature = "#009E73",
-           Selection_incompatibility = "lightsalmon",Competition = "#6EE2FF",Oxygen ="maroon", Salinity ="brown2",Climate_change = "chocolate1",Deep_sea = "darkgreen",Misc ="yellow4", Unknown = "tan")
+cols2 <- c(Spatial = "gray25",Genetic = "darkblue",Historical = "plum1",Oceanography = "olivedrab2",
+           Habitat = "violetred",Invasive = "darkmagenta",Effort = "#F0E442",Larval_duration = "royalblue3",Behavior = "indianred3",Temperature = "#009E73",
+           Selection_incompatibility = "lightsalmon",Competition = "#6EE2FF",Oxygen ="maroon", Salinity ="mediumpurple1",Recent_climate_change = "chocolate1",Misc ="yellow4", Unknown = "tan")
 
 #Big Gaps
 par(mfrow = c(2,3))
+par(mar = c(1, 1, 1, 1) + 0.3)
 chordDiagram(out_spatial,grid.col = cols2,annotationTrack = "grid",group=group, big.gap = 10) 
 title("Spatial",cex.main = 1.8)
 #Add tick marks every 10 papers and make it pretty
@@ -200,7 +203,7 @@ for(si in get.all.sector.index()) {
 }
 
 chordDiagram(out_both1,grid.col = cols2,annotationTrack = "grid",group=group, big.gap = 10)
-title("Both",cex.main = 1.8)
+title(main = "Both", cex.main = 1.8)
 
 for(si in get.all.sector.index()) {
   circos.axis(h = 'top',
@@ -220,8 +223,8 @@ for(si in get.all.sector.index()) {
 #Legends are weird with circlize, make it separately and export for figure making
 par(mfrow = c(1,3),mar = c(5,0,0,0))
 plot.new()
-legend("bottom", legend = c("Spatial","Genetic","Community", "Historical process","Oceanography","Habitat","Invasion","Effort", 
-                            "Larval duration", "Behavior", "Temperature", "Selection/incompatibility","Competition", "Oxygen","Salinity","Climate change","Deep sea","Other","Unknown"), fill = cols2)
+legend("bottom", legend = c("Spatial","Genetic", "Historical process","Oceanography","Habitat","Invasion","Effort", 
+                            "Larval duration", "Behavior", "Temperature", "Selection/incompatibility","Competition", "Oxygen","Salinity","Recent climate change","Other","Unknown"), fill = cols2)
 
 
 
@@ -230,74 +233,75 @@ legend("bottom", legend = c("Spatial","Genetic","Community", "Historical process
 #A little clunky, repeat the same process for dfb to make big-scale plots
 
 #Disjunction types
-S<-dfs %>% 
+S<-dfb %>% 
   filter(str_detect(Category, pattern = "Spatial,"))
 S$Category="S"
-G<-dfs %>% 
+G<-dfb %>% 
   filter(str_detect(Category, pattern = "Genetic,"))
 G$Category="G"
-C<-dfs %>% 
-  filter(str_detect(Category, pattern = "Community,"))
-C$Category="C"
+#C<-dfb %>% 
+#  filter(str_detect(Category, pattern = "Community,"))
+#C$Category="C"
 
 ##Mechanisms##
-V<-dfs %>% 
+V<-dfb %>% 
   filter(str_detect(Category, pattern = "Historical,"))
 V$Category="V"
-O<-dfs %>% 
+O<-dfb %>% 
   filter(str_detect(Category, pattern = "Oceanography,"))
 O$Category="O"
-H<-dfs %>% 
+H<-dfb %>% 
   filter(str_detect(Category, pattern = "Habitat,"))
 H$Category="H"
-I<-dfs %>% 
+I<-dfb %>% 
   filter(str_detect(Category, pattern = "Invasive,"))
 I$Category="I"
-E<-dfs %>% 
+E<-dfb %>% 
   filter(str_detect(Category, pattern = "Effort,"))
 E$Category="E"
-L<-dfs %>% 
+L<-dfb %>% 
   filter(str_detect(Category, pattern = "Larval_duration,"))
 L$Category="L"
-B<-dfs %>% 
+B<-dfb %>% 
   filter(str_detect(Category, pattern = "Behavior,"))
 B$Category="B"
-T<-dfs %>% 
+T<-dfb %>% 
   filter(str_detect(Category, pattern = "Temperature,"))
 T$Category="T"
-Sx<-dfs %>% 
+Sx<-dfb %>% 
   filter(str_detect(Category, pattern = "Selection_incompatibility,"))
 Sx$Category="Sx"
-F<-dfs %>% 
+F<-dfb %>% 
   filter(str_detect(Category, pattern = "Competition,"))
 F$Category="F"
-Ox<-dfs %>% 
+Ox<-dfb %>% 
   filter(str_detect(Category, pattern = "Oxygen,"))
 Ox$Category="Ox"
-Sal<-dfs %>% 
+Sal<-dfb %>% 
   filter(str_detect(Category, pattern = "Salinity,"))
 Sal$Category="Sal"
-W<-dfs %>% 
+W<-dfb %>% 
   filter(str_detect(Category, pattern = "Climate_change,"))
 W$Category="W"
-D<-dfs %>% 
-  filter(str_detect(Category, pattern = "Deep_sea,"))
-D$Category="D"
+#D<-dfb %>% 
+#  filter(str_detect(Category, pattern = "Deep_sea,"))
+#D$Category="D"
 
-all<-rbind(V,O,H,I,E,L,B,T,Sx,F,Ox,Sal,W,D)
+all<-rbind(V,O,H,I,E,L,B,T,Sx,F,Ox,Sal,W)
 
 
-cols <- c("historical process" = "plum1", oceanography = "olivedrab2",  habitat= "violetred",invasion = "brown4", effort = "#F0E442", "larval dur." = "royalblue3",
-           behavior = "indianred3", temperature = "#009E73",selection = "lightsalmon",competition = "#6EE2FF",oxygen="maroon", salinity="brown2",
-           warming = "chocolate1","deep sea" = "darkgreen")
+cols <- c("historical process" = "plum1", oceanography = "olivedrab2",  habitat= "violetred",invasion = "darkmagenta", effort = "#F0E442", "larval dur." = "royalblue3",
+           behavior = "indianred3", temperature = "#009E73",selection = "lightsalmon",competition = "#6EE2FF",oxygen="maroon", salinity="mediumpurple1",
+           warming = "chocolate1")
 
-custom_order<-c("V","O","H","I","E","L","B","T","Sx","F","Ox","Sal","W","D")
+
+custom_order<-c("V","O","H","I","E","L","B","T","Sx","F","Ox","Sal","W")
 # basic example
 all %>%
   arrange(match(Category, custom_order))
 all$Category <- factor(all$Category, levels = custom_order)
 all$Category2<-mapvalues(all$Category, from = custom_order, to = c("historical process", "oceanography", "habitat","invasion", "effort", "larval dur.",
-                                                                   "behavior","temperature","selection","competition","oxygen","salinity","warming","deep sea"))
+                                                                   "behavior","temperature","selection","competition","oxygen","salinity","warming"))
 # Make histograms
 all %>% 
   ggplot(aes(x = year))+
