@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 <div style="width: 1300px;"> <!-- Set the width of the chunk to 100% -->
 
-These plots accompany the paper and allow a user to interact with each disjunction type and mechanism to better visualize the results, particularly when chords are small. Big disjunctions refer to spatial scales over 1000km and Small disjunctions refer to spatial scales under 1000km. 
+These plots accompany the paper and allow a user to interact with each disjunction type and mechanism to better visualize the results, particularly when chords are small. Large disjunctions refer to spatial scales over 1000km and Regional disjunctions refer to spatial scales under 1000km, along continous ocean coastline. 
 
 Each color is defined below and tick marks indicate 10 papers each. When you hover over a category or chord, you can also see the number of papers corresponding to that category or chord.
 
@@ -53,7 +53,7 @@ To make your own plots, scroll down to the "Filtered plots"
 </style>
 
 
-## Big Disjunctions
+## Large Disjunctions
 ```{r eval =TRUE, echo=FALSE, message = FALSE, warning = FALSE,fig.align = 'left' }
 ###Associations plots
 library(tidyverse)
@@ -184,7 +184,7 @@ layout
 ```
 
 
-## Small Disjunctions
+## Regional Disjunctions
 ```{r eval =TRUE, echo=FALSE, message = FALSE, warning = FALSE }
 
 
@@ -335,7 +335,7 @@ plot_legend(legend_data[11:15], legend_colors[11:15])
 ## Make your own plots
 Make your own plots here! Filter your chord diagrams by your taxon of interest for either Big or Small disjunctions. To compare taxa within a spatial scale, you can plot two diagrams side by side. 
 
-## Big Disjunctions
+## Large Disjunctions
 ```{r eval =TRUE, echo=FALSE, message = FALSE, warning = FALSE}
 library(shinydashboard)
 ###############
@@ -476,7 +476,7 @@ shinyApp(ui, server,options = list(width = 1300, height=600))
 
 
 
-## Small Disjunctions
+## Regional Disjunctions
 ```{r eval =TRUE, echo=FALSE, message = FALSE, warning = FALSE}
 #Just look at fish Papers: Small spatial scales
 library(shiny)
@@ -622,5 +622,4 @@ server <- function(input, output, session) {
 
 shinyApp(ui, server,options = list(width = 1300, height=600))
 ```
-
 
